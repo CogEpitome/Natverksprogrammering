@@ -4,12 +4,9 @@ package clientserver.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 // @author Jonas Iacobi
 
@@ -19,6 +16,10 @@ public class Runner implements Runnable{
     private Server.Session session = null; 
     private Evaluator evaluator = null;
     private Server server = null;
+    PrintWriter out;
+    BufferedReader in;
+    private boolean connected = true;
+    
     
     public Runner(Socket client, Server server)
     {
@@ -32,30 +33,36 @@ public class Runner implements Runnable{
     @Override
     public void run()
     {
-        try
-        {
-            String received = read();
-            if(received != null)
+        try{
+            out = new PrintWriter(client.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        } catch(IOException ioe){
+            throw new RuntimeException(ioe);
+        }
+        
+        while(connected)
             {
-                String result = evaluator.evaluate(received, session);
-                send(interpret(result));
-            }
-        }
-        catch(IOException ioe)
-        {
-            throw new RuntimeException("Failed to read the http request from client.");
-        }
-        finally
-        {
             try
             {
-                client.close();
+                String received = read();
+                if(received != null)
+                {
+                    String result = evaluator.evaluate(received, session);
+                    send(interpret(result));
+                }
             }
             catch(IOException ioe)
             {
-                throw new RuntimeException("Failed to close client connection.");
+                try
+                {
+                    client.close();
+                    connected = false;
+                } catch(IOException ioe2) {
+                    throw new RuntimeException("Failed to close client connection.");
+                }
+                throw new RuntimeException("Failed to read the request from client.");
             }
-        }
+            }
 
     }
     
@@ -87,14 +94,14 @@ public class Runner implements Runnable{
     
     private String read() throws IOException
     {
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        
         String line = in.readLine();
         return line;
     }
     
     private void send(String send) throws IOException
     {
-        PrintWriter out = new PrintWriter(client.getOutputStream());
+        
         out.println(send);
         out.flush();      
     }

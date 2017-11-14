@@ -9,8 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 //This is the main server class, it accepts messages from clients
-public class Server implements Runnable{
+public class Server{
     private static final int LINGERTIME = 10000;
+    private static final int PORT = 9080;
     
     private int port;
     private boolean running = true;
@@ -27,8 +28,18 @@ public class Server implements Runnable{
         protected char[] guessed;
         protected int tries;
         protected int score;
+        
+        protected Session get(Socket client){
+            return this;
+        }
     }
     
+    
+     public static void main(String[] args){
+         Server server = new Server(PORT);
+         server.start();
+        }
+
     //Constructor
     public Server(int port)
     {
@@ -37,13 +48,18 @@ public class Server implements Runnable{
         this.session = new Session();
     }
     
-    @Override
-    public void run()
+
+    public void start()
     {
         //Initialize on start. Sets the first word of the game.
         setWord(fileHandler.getWord(), session);
         session.tries = session.word.length;
         
+        serve();
+        
+    }
+    
+    public void serve(){
         //Open a server socket on a given port
         try
         {
@@ -68,7 +84,10 @@ public class Server implements Runnable{
             }
             
             //Create a Runner class to handle the client's request, then continue listening
-            new Thread(new Runner(client, this)).start();
+            Thread thisRunner = new Thread(new Runner(client, this));
+            thisRunner.setPriority(Thread.MAX_PRIORITY);
+            thisRunner.start();
+            
         }
         System.out.println("Server terminated");
     }

@@ -2,22 +2,28 @@
 package clientserver.client.view;
 
 import clientserver.client.controller.Controller;
+import clientserver.client.net.OutHandler;
 import java.util.*;
-import java.io.*;
 
 
 //This class receives input from the console using a scanner, and sends it to the server via a Controller object
 public class ConsoleManager implements Runnable{
     private final Scanner sc = new Scanner(System.in);
+    SyncedOutput out = new SyncedOutput();
     Controller cont;
+    private int port;
+    private String server;
     boolean active = true;
     
     //Constructor
-    public ConsoleManager(Controller cont){ this.cont = cont; }
-    
+    public ConsoleManager(Controller cont, String server, int port){ 
+        this.cont = cont; this.server = server; this.port = port;
+    }
+
     @Override
     public synchronized void run()
     {
+        cont.connect(server, port, new Out());
         //Printed on start
         System.out.println("Bienvenidos a hangman!");
         System.out.println("Guess a letter amigo: ");
@@ -33,14 +39,21 @@ public class ConsoleManager implements Runnable{
                     System.out.println("Game ended");
                     active = false;
                 }
-                //Send the user's guess to the server on a separate thread
+                //Send the user's guess to the server
                 else
                 {
-                    cont.setMessage(in);
-                    new Thread(cont).start();
+                    cont.send(in);
                 }
                 
             }
+        }
+    }
+    
+    private class Out implements OutHandler {
+        @Override
+        public void handleReceived(String msg){
+            out.println(msg);
+            out.println("Guess a letter amigo: ");
         }
     }
     
