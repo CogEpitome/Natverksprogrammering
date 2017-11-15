@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package clientserver.server;
 
 import java.net.Socket;
 
 /**
- *
+ * The class representing a client in the server. Each Client object has information on one player's session.
  * @author Jonas
  */
 public class Client {
@@ -26,6 +21,7 @@ public class Client {
         protected int score;
     }
     
+    //Constructor
     public Client(){
         this.session = new Session();
         this.fileHandler = new FileHandler();
@@ -44,6 +40,7 @@ public class Client {
     private void setWord(char[] word, Session session)
     {
         session.word = word;
+        for(char w : word) {w = Character.toLowerCase(w);}
         session.guessed = new char[word.length];
         for(int i = 0; i < session.guessed.length; i++) { session.guessed[i] = '_'; }
     }

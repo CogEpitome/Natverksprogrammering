@@ -2,17 +2,16 @@
 
 package clientserver.startup;
 
-import clientserver.server.Server;
 import clientserver.client.controller.Controller;
 import clientserver.client.view.ConsoleManager;
 
-//Start the server and start the client
+//Starts a client
 public class Main {
-    //Set the port the client and server will use
+    //Set the port and server address the client will try to connect to
     private static final int PORT = 9080;
     private static final String SERVER = "localhost";
     
-    //Create and start the server and client
+    //Create and start the client
     public static void main(String[] args)
     {
         Controller cont = new Controller();

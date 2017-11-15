@@ -17,7 +17,7 @@ public class Evaluator {
     public String evaluate(String guess, Client.Session session)
     {
         String result;
-        char[] guessArray = guess.toCharArray();
+        char[] guessArray = guess.toLowerCase().toCharArray();
         if(guessArray.length == 1)  result = Arrays.toString(evaluateGuess(guessArray[0], session));
         else                        result = Arrays.toString(evaluateGuess(guessArray, session));
         return result;
@@ -31,9 +31,11 @@ public class Evaluator {
             if(session.word[i] != word[i])
             {
                 session.tries--;
+                System.out.println(session.word);
                 return session.guessed;
             }
         }
+        session.guessed = word;
         return session.word;
     }
     

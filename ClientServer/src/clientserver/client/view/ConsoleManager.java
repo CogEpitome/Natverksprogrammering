@@ -3,16 +3,17 @@ package clientserver.client.view;
 
 import clientserver.client.controller.Controller;
 import clientserver.client.net.OutHandler;
+import java.net.ConnectException;
 import java.util.*;
 
 
-//This class receives input from the console using a scanner, and sends it to the server via a Controller object
+//This class receives input from the console using a scanner, and sends it to the server via a Controller and ServerConnection
 public class ConsoleManager implements Runnable{
     private final Scanner sc = new Scanner(System.in);
     SyncedOutput out = new SyncedOutput();
     Controller cont;
-    private int port;
-    private String server;
+    private final int port;
+    private final String server;
     boolean active = true;
     
     //Constructor
@@ -26,7 +27,6 @@ public class ConsoleManager implements Runnable{
         cont.connect(server, port, new Out());
         //Printed on start
         System.out.println("Bienvenidos a hangman!");
-        System.out.println("Guess a letter amigo: ");
         
         //The main client side loop
         while(active)
@@ -49,11 +49,11 @@ public class ConsoleManager implements Runnable{
         }
     }
     
+    //Prints the server's reply
     private class Out implements OutHandler {
         @Override
         public void handleReceived(String msg){
             out.println(msg);
-            out.println("Guess a letter amigo: ");
         }
     }
     

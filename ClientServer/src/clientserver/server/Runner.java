@@ -1,4 +1,3 @@
-
 package clientserver.server;
 
 import java.io.BufferedReader;
@@ -12,6 +11,7 @@ import java.util.Arrays;
 
 public class Runner implements Runnable{
     
+    private final String PROMPT = "Guess a letter amigo:";
     private Client client;
     private Evaluator evaluator = null;
     private Server server = null;
@@ -73,7 +73,7 @@ public class Runner implements Runnable{
             client.newWord();
             client.session.tries = client.session.word.length;
             client.session.score--;
-            return "You were hung ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + System.lineSeparator();
+            return "You were hung ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + System.lineSeparator() + PROMPT;
         }
         else
         if(Arrays.equals(client.session.guessed, client.session.word))
@@ -82,11 +82,11 @@ public class Runner implements Runnable{
             client.newWord();
             client.session.tries = client.session.word.length;
             client.session.score++;
-            return "You won ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + "Press any key to continue"  + System.lineSeparator();
+            return "You won ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + System.lineSeparator() + PROMPT;
         }
         else
         {
-            return Arrays.toString(client.session.guessed) + " | "+client.session.tries + " tries remain | Score: " + client.session.score;
+            return Arrays.toString(client.session.guessed) + " | "+client.session.tries + " tries remain | Score: " + client.session.score + System.lineSeparator() + PROMPT;
         }
     }
     
