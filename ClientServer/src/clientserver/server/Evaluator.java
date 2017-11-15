@@ -14,7 +14,7 @@ public class Evaluator {
     protected Evaluator(){};
     
     //Compares the guess string to the word chosen by the server for the session
-    public String evaluate(String guess, Server.Session session)
+    public String evaluate(String guess, Client.Session session)
     {
         String result;
         char[] guessArray = guess.toCharArray();
@@ -24,7 +24,7 @@ public class Evaluator {
     }
     
     //Determines if the guess matches the entire word
-    private char[] evaluateGuess(char[] word, Server.Session session)
+    private char[] evaluateGuess(char[] word, Client.Session session)
     {
         for(int i = 0; i < word.length; i++)
         {
@@ -38,7 +38,7 @@ public class Evaluator {
     }
     
     //Determines if the guessed character exists in the word
-    private char[] evaluateGuess(char c, Server.Session session)
+    private char[] evaluateGuess(char c, Client.Session session)
     {
         boolean found = false;
         for(int i = 0; i < session.word.length; i++)

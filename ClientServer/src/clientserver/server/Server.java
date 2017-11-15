@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 //This is the main server class, it accepts messages from clients
 public class Server{
@@ -16,23 +18,11 @@ public class Server{
     private int port;
     private boolean running = true;
     private ServerSocket socket = null;
-    private Socket client = null;
+    private Socket clientSocket = null;
+    private Client client;
+    private List<Client> clients = new ArrayList<>();
     private Thread runner = null;
     private FileHandler fileHandler = null;
-    protected Session session = null;
-    
-    //Session keeps track of a game session's variables
-    protected class Session
-    {
-        protected char[] word;
-        protected char[] guessed;
-        protected int tries;
-        protected int score;
-        
-        protected Session get(Socket client){
-            return this;
-        }
-    }
     
     
      public static void main(String[] args){
@@ -45,16 +35,14 @@ public class Server{
     {
         this.port = port;
         this.fileHandler = new FileHandler();
-        this.session = new Session();
     }
     
 
     public void start()
     {
-        //Initialize on start. Sets the first word of the game.
-        setWord(fileHandler.getWord(), session);
-        session.tries = session.word.length;
-        
+        client = new Client();
+        client.newWord();
+        clients.add(client);
         serve();
         
     }
@@ -75,8 +63,9 @@ public class Server{
         {
             try //Attempt to connect to a client
             {
-                client = this.socket.accept();
-                client.setSoLinger(true, LINGERTIME);
+                clientSocket = this.socket.accept();
+                clientSocket.setSoLinger(true, LINGERTIME);
+                client.socket = clientSocket;
             }
             catch(IOException ioe)
             {
@@ -92,20 +81,7 @@ public class Server{
         System.out.println("Server terminated");
     }
     
-    //Updates the session with a new word from the FileHandler class
-    protected void newWord()
-    {
-        setWord(fileHandler.getWord(), session);
-        session.tries = session.word.length;
-    }
     
-    //Sets the session's word and resets the session's guessed array
-    private void setWord(char[] word, Session session)
-    {
-        session.word = word;
-        session.guessed = new char[word.length];
-        for(int i = 0; i < session.guessed.length; i++) { session.guessed[i] = '_'; }
-    }
     
     //Check if the server is running
     private synchronized boolean running()

@@ -12,8 +12,7 @@ import java.util.Arrays;
 
 public class Runner implements Runnable{
     
-    private Socket client = null;
-    private Server.Session session = null; 
+    private Client client;
     private Evaluator evaluator = null;
     private Server server = null;
     PrintWriter out;
@@ -21,11 +20,10 @@ public class Runner implements Runnable{
     private boolean connected = true;
     
     
-    public Runner(Socket client, Server server)
+    public Runner(Client client, Server server)
     {
         this.server = server;
         this.client = client;
-        this.session = server.session;
         this.evaluator = new Evaluator();
     }
     
@@ -34,8 +32,8 @@ public class Runner implements Runnable{
     public void run()
     {
         try{
-            out = new PrintWriter(client.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            out = new PrintWriter(client.socket.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(client.socket.getInputStream()));
         } catch(IOException ioe){
             throw new RuntimeException(ioe);
         }
@@ -47,7 +45,8 @@ public class Runner implements Runnable{
                 String received = read();
                 if(received != null)
                 {
-                    String result = evaluator.evaluate(received, session);
+                    System.out.print(client.session.word);
+                    String result = evaluator.evaluate(received, client.session);
                     send(interpret(result));
                 }
             }
@@ -55,7 +54,7 @@ public class Runner implements Runnable{
             {
                 try
                 {
-                    client.close();
+                    client.socket.close();
                     connected = false;
                 } catch(IOException ioe2) {
                     throw new RuntimeException("Failed to close client connection.");
@@ -69,26 +68,26 @@ public class Runner implements Runnable{
     private String interpret(String result)
     {
         
-        if(session.tries <= 0)
+        if(client.session.tries <= 0)
         {
-            String oldWord = Arrays.toString(server.session.word);
-            server.newWord();
-            server.session.tries = server.session.word.length;
-            server.session.score--;
-            return "You were hung ! " + oldWord + " | Score: "+session.score + System.lineSeparator() + System.lineSeparator();
+            String oldWord = Arrays.toString(client.session.word);
+            client.newWord();
+            client.session.tries = client.session.word.length;
+            client.session.score--;
+            return "You were hung ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + System.lineSeparator();
         }
         else
-        if(Arrays.equals(session.guessed, session.word))
+        if(Arrays.equals(client.session.guessed, client.session.word))
         {
-            String oldWord = Arrays.toString(server.session.word);
-            server.newWord();
-            server.session.tries = server.session.word.length;
-            server.session.score++;
-            return "You won ! " + oldWord + " | Score: "+session.score + System.lineSeparator() + "Press any key to continue"  + System.lineSeparator();
+            String oldWord = Arrays.toString(client.session.word);
+            client.newWord();
+            client.session.tries = client.session.word.length;
+            client.session.score++;
+            return "You won ! " + oldWord + " | Score: "+client.session.score + System.lineSeparator() + "Press any key to continue"  + System.lineSeparator();
         }
         else
         {
-            return Arrays.toString(server.session.guessed) + " | "+server.session.tries + " tries remain | Score: " + server.session.score;
+            return Arrays.toString(client.session.guessed) + " | "+client.session.tries + " tries remain | Score: " + client.session.score;
         }
     }
     

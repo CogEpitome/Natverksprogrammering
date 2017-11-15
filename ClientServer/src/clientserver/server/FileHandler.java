@@ -29,7 +29,7 @@ public class FileHandler {
     protected FileHandler()
     {
         try{readWords();}
-        catch(IOException ioe){throw new RuntimeException("Could read words from file");}
+        catch(IOException ioe){throw new RuntimeException("Could not read words from file");}
     }
         
     //Returns a random word stored in memory
