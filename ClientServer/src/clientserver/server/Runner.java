@@ -45,7 +45,6 @@ public class Runner implements Runnable{
                 String received = read();
                 if(received != null)
                 {
-                    System.out.print(client.session.word);
                     String result = evaluator.evaluate(received, client.session);
                     send(interpret(result));
                 }
