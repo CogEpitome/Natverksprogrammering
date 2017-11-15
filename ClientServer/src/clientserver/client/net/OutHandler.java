@@ -1,12 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 package clientserver.client.net;
 
 /**
- *
+ * This is an interface for sending messages received from the server to the client without breaking the MVC pattern.
  * @author Jonas
  */
 public interface OutHandler {

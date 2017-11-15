@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package clientserver.client.net;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -23,6 +17,7 @@ public class ServerConnection {
     private BufferedReader in;
     private volatile boolean connected;
     
+    //This method is unsed to connect to the server
     public void connect(String server, int port, OutHandler outHandler) throws IOException{
         socket = new Socket();
         socket.connect(new InetSocketAddress(server, port), 10000);
@@ -35,6 +30,7 @@ public class ServerConnection {
         new Thread(new Ihearyou(outHandler)).start();
     }
     
+    //Disconnects the client from the server and closes the socket.
     public void disconnect() throws IOException{
         send("DISCONNECT");
         socket.close();
@@ -42,10 +38,12 @@ public class ServerConnection {
         connected = false;
     }
     
+    //Sends a message to the server
     public void send(String msg){
         out.println(msg);
     }
     
+    //This class is responsible for listening for server replies.
     private class Ihearyou implements Runnable 
     {
         private final OutHandler outHandler;
