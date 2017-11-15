@@ -17,12 +17,12 @@ public class Server{
     
     private int port;
     private boolean running = true;
-    private ServerSocket socket = null;
-    private Socket clientSocket = null;
+    private ServerSocket socket;
+    private Socket clientSocket;
     private Client client;
-    private List<Client> clients = new ArrayList<>();
-    private Thread runner = null;
-    private FileHandler fileHandler = null;
+    private List<Client> clients;
+    private Thread runner;
+    private FileHandler fileHandler;
     
     
      public static void main(String[] args){
@@ -35,16 +35,21 @@ public class Server{
     {
         this.port = port;
         this.fileHandler = new FileHandler();
+        this.clients = new ArrayList<>();
     }
     
 
     public void start()
     {
-        client = new Client();
-        client.newWord();
+        serve();      
+    }
+    
+    private Client addClient(Socket clientSocket){
+        Client newClient = new Client();
+        newClient.socket = clientSocket;
         clients.add(client);
-        serve();
-        
+        System.out.println("New client added");
+        return newClient;
     }
     
     public void serve(){
@@ -65,7 +70,7 @@ public class Server{
             {
                 clientSocket = this.socket.accept();
                 clientSocket.setSoLinger(true, LINGERTIME);
-                client.socket = clientSocket;
+                client = addClient(clientSocket);
             }
             catch(IOException ioe)
             {

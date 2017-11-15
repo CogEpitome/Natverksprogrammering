@@ -15,11 +15,9 @@ public class Main {
     //Create and start the server and client
     public static void main(String[] args)
     {
-        //Server server = new Server(PORT);
         Controller cont = new Controller();
         ConsoleManager conMan = new ConsoleManager(cont, SERVER, PORT);
         
-        //new Thread(server).start();
         new Thread(conMan).start();
     }
 }
