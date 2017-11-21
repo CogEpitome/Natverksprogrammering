@@ -12,6 +12,4 @@ import java.net.InetSocketAddress;
 public interface OutHandler {
     
     public void received(String msg);
-    public void connected(InetSocketAddress address);
-    public void disconnected();
 }

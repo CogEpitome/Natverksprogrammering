@@ -1,7 +1,8 @@
 //@author Jonas Iacobi
 package clientserver.client.view;
 
-import clientserver.client.net.OutHandler;
+import clientserver.client.net.*;
+import java.net.InetSocketAddress;
 import java.util.*;
 
 
@@ -9,20 +10,20 @@ import java.util.*;
 public class ConsoleManager implements Runnable{
     private final Scanner sc = new Scanner(System.in);
     SyncedOutput out = new SyncedOutput();
-    Controller cont;
+    ServerConnection connection;
     private final int port;
     private final String server;
     boolean active = true;
     
     //Constructor
-    public ConsoleManager(Controller cont, String server, int port){ 
-        this.cont = cont; this.server = server; this.port = port;
+    public ConsoleManager(ServerConnection connection, String server, int port){ 
+        this.connection = connection; this.server = server; this.port = port;
     }
 
     @Override
     public synchronized void run()
     {
-        cont.connect(server, port, new Out());
+        connection.connect(server, port, new Out());
         //Printed on start
         System.out.println("Bienvenidos a hangman!");
         
@@ -40,7 +41,7 @@ public class ConsoleManager implements Runnable{
                 //Send the user's guess to the server
                 else
                 {
-                    cont.send(in);
+                    connection.qSend(in);
                 }
                 
             }
@@ -50,7 +51,7 @@ public class ConsoleManager implements Runnable{
     //Prints the server's reply
     private class Out implements OutHandler {
         @Override
-        public void handleReceived(String msg){
+        public void received(String msg){
             out.println(msg);
         }
     }

@@ -6,11 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
@@ -27,12 +30,20 @@ public class ServerConnection implements Runnable{
     private SocketChannel channel;
     private Selector selector;
     private final List<OutHandler> listeners = new ArrayList<>();
+    private final ByteBuffer received = ByteBuffer.allocateDirect(100);
+    private final Queue<ByteBuffer> sendQ = new ArrayDeque();
+    private boolean sending = false;
     
     public void run(){
         try{
             initialize();
             
-            while(connected){
+            while(connected || !sendQ.isEmpty()){
+                //Inform the selector that we'd like to send a message
+                if(sending){
+                    channel.keyFor(selector).interestOps(SelectionKey.OP_WRITE);
+                    sending = false;
+                }
                 //select will return once a conncetion is established,
                 //preventing the rest of the while loop from blocking.
                 selector.select();
@@ -40,10 +51,11 @@ public class ServerConnection implements Runnable{
                     selector.selectedKeys().remove(key);
                     if(key.isValid()){
                         if(key.isConnectable()){
-                            finalizeConnection(key);
+                            channel.finishConnect();
+                            key.interestOps(SelectionKey.OP_READ);
                         } else 
                         if(key.isReadable()){
-                            received(key);
+                            receive(key);
                         } else
                         if(key.isWritable()){
                             send(key);
@@ -60,32 +72,53 @@ public class ServerConnection implements Runnable{
         
     }
     
-    public void connect(String server, int port){
+    public void connect(String server, int port, OutHandler listener){
         this.address = new InetSocketAddress(server, port);
+        listeners.add(listener);
         new Thread(this).start();
     }
     
-    private void finalizeConnection(SelectionKey key) throws IOException{
-        channel.finishConnect();
-        key.interestOps(SelectionKey.OP_READ);
-        try{
-            informDone((InetSocketAddress)channel.getRemoteAddress());
-        } catch (IOException ioe){
-            throw new RuntimeException("Failed to get remote address");
-        }
-    }
-    
-    private void informDone(InetSocketAddress add){
+    //The inform[...]([...]) methods result in I/O, so they're executed using the built in thread pool to prevent delays.
+    private void informReceived(String str){
         Executor pool = ForkJoinPool.commonPool();
         listeners.forEach((listener) -> {
             pool.execute(() -> {
-                listener.connected(add);
+                listener.received(str);
             });
         });
     }
     
-    public void addListener(OutHandler listener){
-        listeners.add(listener);
+    public void qSend(String msg){
+        sendQ.add(ByteBuffer.wrap(msg.getBytes()));
+        sending = true;
+        selector.wakeup();
+    }
+    
+    private void send(SelectionKey key) throws IOException{
+        ByteBuffer msg;
+        synchronized(sendQ){
+            while((msg = sendQ.peek()) != null){
+                channel.write(msg);
+                if(msg.hasRemaining()) return; //In case the entire buffer wasn't sent
+                sendQ.remove();
+            }
+            key.interestOps(SelectionKey.OP_READ);
+        }
+    }
+    
+    private void receive(SelectionKey key) throws IOException{
+        received.clear();
+        int length = channel.read(received);
+        if(length == -1){
+            throw new IOException("Server reply empty");
+        }
+        
+        received.flip();
+        byte[] receivedBytes = new byte[received.remaining()];
+        received.get(receivedBytes);
+        String receivedStr = new String(receivedBytes);
+        informReceived(receivedStr);
+        
     }
     
     private void initialize() throws IOException{
@@ -97,7 +130,5 @@ public class ServerConnection implements Runnable{
         selector = Selector.open();
         channel.register(selector, SelectionKey.OP_CONNECT);
     }
-    
 
-    
 }
