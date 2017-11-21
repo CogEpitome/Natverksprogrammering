@@ -1,11 +1,7 @@
 package clientserver.client.net;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -22,9 +18,6 @@ import java.util.concurrent.ForkJoinPool;
  * @author Jonas
  */
 public class ServerConnection implements Runnable{
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
     private volatile boolean connected;
     private InetSocketAddress address;
     private SocketChannel channel;
@@ -65,11 +58,7 @@ public class ServerConnection implements Runnable{
             }    
         } catch(IOException ioe){
             throw new RuntimeException(ioe);
-        }
-        
-        //After connection is set false
-            
-        
+        }        
     }
     
     public void connect(String server, int port, OutHandler listener){
@@ -78,7 +67,7 @@ public class ServerConnection implements Runnable{
         new Thread(this).start();
     }
     
-    //The inform[...]([...]) methods result in I/O, so they're executed using the built in thread pool to prevent delays.
+    //This interface method is passed to the view and results in I/O, so it is executed using the built in thread pool to prevent delays.
     private void informReceived(String str){
         Executor pool = ForkJoinPool.commonPool();
         listeners.forEach((listener) -> {
