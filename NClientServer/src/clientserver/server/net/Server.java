@@ -1,10 +1,11 @@
 /*
  * @author Jonas Iacobi
  */
-package clientserver.server;
+package clientserver.server.net;
 
+import clientserver.server.model.Client;
+import clientserver.server.filehandler.FileHandler;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -45,8 +46,7 @@ public class Server{
     }
     
     private Client addClient(Socket clientSocket){
-        Client newClient = new Client();
-        newClient.socket = clientSocket;
+        Client newClient = new Client(clientSocket);
         clients.add(client);
         System.out.println("New client added");
         return newClient;

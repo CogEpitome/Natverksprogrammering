@@ -1,6 +1,9 @@
 
-package clientserver.server;
+package clientserver.server.net;
 
+import clientserver.server.net.Server;
+import clientserver.server.model.Evaluator;
+import clientserver.server.model.Client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,8 +36,8 @@ public class Runner implements Runnable{
     public void run()
     {
         try{
-            out = new PrintWriter(client.socket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(client.socket.getInputStream()));
+            out = new PrintWriter(client.getSocket().getOutputStream());
+            in = new BufferedReader(new InputStreamReader(client.getSocket().getInputStream()));
         } catch(IOException ioe){
             throw new RuntimeException(ioe);
         }
@@ -54,12 +57,12 @@ public class Runner implements Runnable{
             {
                 try
                 {
-                    client.socket.close();
+                    client.getSocket().close();
                     connected = false;
                 } catch(IOException ioe2) {
-                    throw new RuntimeException("Failed to close client connection.");
+                    throw new RuntimeException("Failed to close client connection.", ioe2);
                 }
-                throw new RuntimeException("Failed to read the request from client.");
+                throw new RuntimeException("Failed to read the request from client.", ioe);
             }
             }
 

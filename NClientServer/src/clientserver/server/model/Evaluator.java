@@ -1,4 +1,4 @@
-package clientserver.server;
+package clientserver.server.model;
 
 import java.util.Arrays;
 
@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Evaluator {
     
     //Constructor
-    protected Evaluator(){};
+    public Evaluator(){};
     
     //Compares the guess string to the word chosen by the server for the session
     public String evaluate(String guess, Client.Session session)

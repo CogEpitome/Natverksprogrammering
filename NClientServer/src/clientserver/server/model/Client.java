@@ -1,35 +1,37 @@
-package clientserver.server;
+package clientserver.server.model;
 
+import clientserver.server.filehandler.FileHandler;
 import java.net.Socket;
 
 /**
  * The class representing a client in the server. Each Client object has information on one player's session.
  * @author Jonas
  */
-public class Client {
+public final class Client {
     
-    protected Session session;
+    public Session session;
     protected Socket socket;
-    protected FileHandler fileHandler;
+    public FileHandler fileHandler;
     
     //Session keeps track of a game session's variables
-    protected class Session
+    public class Session
     {   
-        protected char[] word;
-        protected char[] guessed;
-        protected int tries;
-        protected int score;
+        public char[] word;
+        public char[] guessed;
+        public int tries;
+        public int score;
     }
     
     //Constructor
-    public Client(){
+    public Client(Socket socket){
         this.session = new Session();
+        this.socket = socket;
         this.fileHandler = new FileHandler();
         this.newWord();
     }
     
     //Updates the session with a new word from the FileHandler class
-    protected void newWord()
+    public void newWord()
     {
         char[] word = this.fileHandler.getWord();
         setWord(word, this.session);
@@ -43,6 +45,10 @@ public class Client {
         for(char w : word) {w = Character.toLowerCase(w);}
         session.guessed = new char[word.length];
         for(int i = 0; i < session.guessed.length; i++) { session.guessed[i] = '_'; }
+    }
+    
+    public Socket getSocket(){
+        return this.socket;
     }
     
 }

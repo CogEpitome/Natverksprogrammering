@@ -2,7 +2,6 @@
 package clientserver.client.view;
 
 import clientserver.client.net.*;
-import java.net.InetSocketAddress;
 import java.util.*;
 
 

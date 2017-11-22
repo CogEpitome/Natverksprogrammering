@@ -2,8 +2,7 @@
 
 package clientserver.startup;
 
-import clientserver.server.Server;
-import clientserver.client.controller.Controller;
+import clientserver.client.net.ServerConnection;
 import clientserver.client.view.ConsoleManager;
 
 //Starts a client
@@ -15,8 +14,8 @@ public class Main {
     //Create and start the client
     public static void main(String[] args)
     {
-        Controller cont = new Controller();
-        ConsoleManager conMan = new ConsoleManager(cont, SERVER, PORT);
+        ServerConnection serCon = new ServerConnection();
+        ConsoleManager conMan = new ConsoleManager(serCon, SERVER, PORT);
         
         new Thread(conMan).start();
     }

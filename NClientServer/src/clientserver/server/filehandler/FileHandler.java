@@ -1,4 +1,4 @@
-package clientserver.server;
+package clientserver.server.filehandler;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,14 +21,14 @@ public class FileHandler {
     private List<String> lines;
     
     //Constructor. The class reads in the lines of the specified file once on creation.
-    protected FileHandler()
+    public FileHandler()
     {
         try{readWords();}
-        catch(IOException ioe){throw new RuntimeException("Could not read words from file");}
+        catch(IOException ioe){throw new RuntimeException("Could not read words from file", ioe);}
     }
         
     //Returns a random word stored in memory
-    protected char[] getWord()
+    public char[] getWord()
     {
         Random rand = new Random();
         return lines.get(rand.nextInt(lines.size()-1)).toCharArray();
