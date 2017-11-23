@@ -2,6 +2,7 @@ package clientserver.server.model;
 
 import clientserver.server.filehandler.FileHandler;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 
 /**
  * The class representing a client in the server. Each Client object has information on one player's session.
@@ -10,7 +11,6 @@ import java.net.Socket;
 public final class Client {
     
     public Session session;
-    protected Socket socket;
     public FileHandler fileHandler;
     
     //Session keeps track of a game session's variables
@@ -23,9 +23,8 @@ public final class Client {
     }
     
     //Constructor
-    public Client(Socket socket){
+    public Client(){
         this.session = new Session();
-        this.socket = socket;
         this.fileHandler = new FileHandler();
         this.newWord();
     }
@@ -46,9 +45,6 @@ public final class Client {
         session.guessed = new char[word.length];
         for(int i = 0; i < session.guessed.length; i++) { session.guessed[i] = '_'; }
     }
-    
-    public Socket getSocket(){
-        return this.socket;
-    }
+
     
 }
