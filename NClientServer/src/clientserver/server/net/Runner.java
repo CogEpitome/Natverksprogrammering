@@ -22,6 +22,7 @@ public class Runner implements Runnable{
     
     private final String PROMPT = "Guess a letter amigo:";
     private final Client client;
+    private Server.ServerClient serverClient;
     
     
     private Evaluator evaluator = null;
@@ -34,45 +35,38 @@ public class Runner implements Runnable{
     private Server server = null;
     private SocketChannel clientChannel;
     private final ByteBuffer received = ByteBuffer.allocateDirect(100);
-    private Server.ServerClient serverClient;
     
     private final Queue<ByteBuffer> sendQ = new ArrayDeque<>();
     
-    public Runner(Server server)
+    public Runner(Server server, SocketChannel clientChannel)
     {
         this.server = server;
         this.evaluator = new Evaluator();
         this.client = new Client();
+        this.clientChannel = clientChannel;
     }
     
     //
     @Override
     public void run()
     {
-        String result = interpret(receivedStr);
-        sendQ.add(ByteBuffer.wrap(result.getBytes()));
-        server.send(result, clientChannel);
+        String evaluated = evaluator.evaluate(receivedStr, client.session);
+        ByteBuffer result = ByteBuffer.wrap(interpret(evaluated).getBytes());
+        server.sendToClient(result, serverClient);
+        serverClient.Qsend(result);
     }
 
-    public void send() throws IOException
+    public void send(ByteBuffer send) throws IOException
     {
-        ByteBuffer msg;
-        synchronized(sendQ){
-                while((msg = sendQ.peek()) != null){
-                    clientChannel.write(msg);
-        if(msg.hasRemaining()){
+        clientChannel.write(send);
+        if(send.hasRemaining()){
             throw new IOException("Failed to send message");
         }
-                    System.out.println("ServerClient calling runner.send");
-                    sendQ.remove();
-                }
-            }
-        
-        
     }
     
-    public void receive() throws IOException
+    public void receive(Server.ServerClient serverClient) throws IOException
     {
+        this.serverClient = serverClient;
         received.clear();
         int readBytes;
         readBytes = clientChannel.read(received);

@@ -27,6 +27,7 @@ public class ServerConnection implements Runnable{
     private final Queue<ByteBuffer> sendQ = new ArrayDeque();
     private boolean sending = false;
     
+    @Override
     public void run(){
         try{
             initialize();

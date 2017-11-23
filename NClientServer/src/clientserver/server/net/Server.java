@@ -37,9 +37,9 @@ public class Server{
     private ServerSocketChannel listenChannel;
     private boolean sending = false;
     
-     public static void main(String[] args){
-         Server server = new Server(PORT);
-         server.start();
+    public static void main(String[] args){
+        Server server = new Server(PORT);
+        server.start();
         }
 
     //Constructor
@@ -63,11 +63,10 @@ public class Server{
         serve();
     }
     
-    public void send(String str, SocketChannel clientChannel){
+    public void sendToClient(ByteBuffer message, ServerClient serverClient){
         sending = true;
-        ByteBuffer message = ByteBuffer.wrap(str.getBytes());
-        synchronized(sendQ){
-            sendQ.add(message);
+        synchronized(serverClient.sendQ){
+            serverClient.Qsend(message);
         }
         selector.wakeup();
     }
@@ -104,20 +103,20 @@ public class Server{
             throw new RuntimeException(ioe);
         }
     }
-    
+    /**/
     private void startHandler(SelectionKey key) throws IOException{
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-        SocketChannel clientChannel = serverSocketChannel.accept();
+        SocketChannel clientChannel = serverSocketChannel.accept(); //Establish connection
         clientChannel.configureBlocking(false);
-        Runner runner = new Runner(this);
-        clientChannel.register(selector, SelectionKey.OP_WRITE, new ServerClient(runner));
+        Runner runner = new Runner(this, clientChannel);
+        clientChannel.register(selector, SelectionKey.OP_READ, new ServerClient(runner));
         clientChannel.setOption(StandardSocketOptions.SO_LINGER, 100000);
     }
     
     private void receive(SelectionKey key) throws IOException{
         ServerClient serverClient = (ServerClient) key.attachment();
         try{
-            serverClient.runner.receive();
+            serverClient.runner.receive(serverClient);
         } catch (IOException ioe){
             throw new IOException("Couldn't receive from serverClient's runner", ioe);
         }
@@ -142,7 +141,7 @@ public class Server{
     }
     
     
-    public class ServerClient{
+    protected class ServerClient{
         private final Runner runner;
         public final Queue<ByteBuffer> sendQ = new ArrayDeque<>();
         
@@ -150,17 +149,20 @@ public class Server{
             this.runner = runner;
         }
         
-        private void Qsend(ByteBuffer msg){
+        public void Qsend(ByteBuffer msg){
             synchronized(sendQ){
                 sendQ.add(msg.duplicate());
             }
         }
         
         private void send() throws IOException {
-            System.out.println("ServerClient send starting");
-            
-            runner.send();
-            
+            ByteBuffer msg = null;
+            synchronized(sendQ){
+                while((msg = sendQ.peek()) != null){
+                    runner.send(msg);
+                    sendQ.remove();
+                }
+            }            
         }
     }
     
