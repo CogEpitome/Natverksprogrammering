@@ -1,14 +1,11 @@
 
 package clientserver.server.net;
 
-import clientserver.server.net.Server;
 import clientserver.server.model.Evaluator;
 import clientserver.server.model.Client;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
@@ -22,20 +19,17 @@ public class Runner implements Runnable{
     
     private final String PROMPT = "Guess a letter amigo:";
     private final Client client;
-    private Server.ServerClient serverClient;
     
     
     private Evaluator evaluator = null;
     
     PrintWriter out;
     BufferedReader in;
-    private boolean connected = true;
     private String receivedStr;
     
     private Server server = null;
-    private SocketChannel clientChannel;
+    private final SocketChannel clientChannel;
     private final ByteBuffer received = ByteBuffer.allocateDirect(100);
-    
     private final Queue<ByteBuffer> sendQ = new ArrayDeque<>();
     
     public Runner(Server server, SocketChannel clientChannel)
@@ -46,27 +40,36 @@ public class Runner implements Runnable{
         this.clientChannel = clientChannel;
     }
     
-    //
     @Override
     public void run()
     {
-        String evaluated = evaluator.evaluate(receivedStr, client.session);
-        ByteBuffer result = ByteBuffer.wrap(interpret(evaluated).getBytes());
-        server.sendToClient(result, serverClient);
-        serverClient.Qsend(result);
-    }
-
-    public void send(ByteBuffer send) throws IOException
-    {
-        clientChannel.write(send);
-        if(send.hasRemaining()){
-            throw new IOException("Failed to send message");
-        }
+        evaluator.evaluate(receivedStr, client.session);
+        ByteBuffer result = ByteBuffer.wrap(interpret().getBytes());
+        Qsend(result);
+        server.notifySend(result);      
     }
     
-    public void receive(Server.ServerClient serverClient) throws IOException
+    public void Qsend(ByteBuffer msg){
+            synchronized(sendQ){
+                sendQ.add(msg.duplicate());
+            }
+        }
+
+    public void send() throws IOException{
+        ByteBuffer msg;
+            synchronized(sendQ){
+                while((msg = sendQ.peek()) != null){
+                    clientChannel.write(msg);
+                        if(msg.hasRemaining()){
+                            throw new IOException("Failed to send message");
+                        }
+                    sendQ.remove();
+                }
+            }
+    }
+    
+    public void receive() throws IOException
     {
-        this.serverClient = serverClient;
         received.clear();
         int readBytes;
         readBytes = clientChannel.read(received);
@@ -80,11 +83,8 @@ public class Runner implements Runnable{
         
         ForkJoinPool.commonPool().execute(this);//Interpreting thread, to not interfere with communicating thread
     }
-    
-    
-    
-    
-     private String interpret(String result)
+       
+     private String interpret()
     {
         
         if(client.session.tries <= 0)
