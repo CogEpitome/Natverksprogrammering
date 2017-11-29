@@ -19,7 +19,7 @@ public interface DB extends Remote{
     public static final String DB_NAME_IN_REGISTRY = "database_hw3";
     
     //Methods for manipulating db
-    public void register(String username, String password) throws RemoteException, AccountException;
+    long register(Client remoteObject, Account account) throws RemoteException, AccountException;
     
     long login(Client remoteObject, Account account) throws RemoteException;
     

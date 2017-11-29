@@ -32,9 +32,18 @@ public class Controller extends UnicastRemoteObject implements DB {
     
     @Override
     public synchronized long login(Client remoteObject, Account account){
-        long clientId = clientManager.createClient(remoteObject, account);
-        clientManager.notifyLogin(clientId);
-        return clientId;
+        if(dao.userExists(account.getUsername())){
+            long clientId = clientManager.createClient(remoteObject, account);
+            clientManager.notifyLogin(clientId);
+            return clientId;
+        } else {
+            try{
+                remoteObject.receive("Login failed, no such user exists");
+            } catch (RemoteException re){
+                System.out.println("Couldn't send login failure notice to remote client");
+            }
+        }
+        return 0;
     }
     
     @Override
@@ -43,10 +52,11 @@ public class Controller extends UnicastRemoteObject implements DB {
     }
     
     @Override
-    public synchronized void register(String username, String password) throws AccountException{
+    public synchronized long register(Client remoteObject, Account account) throws AccountException{
         try{
-            if(!dao.userExists(username)){
-                dao.register(username, password);
+            if(!dao.userExists(account.getUsername())){
+                dao.register(account);
+                return login(remoteObject, account);
             } else {
                 throw new AccountException("An account with this username already exists!");
             }

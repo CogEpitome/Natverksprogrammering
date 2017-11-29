@@ -50,12 +50,15 @@ public class ConsoleManager implements Runnable{
                         break;
                     
                     case "LOGIN":
-                        out.println("Enter username");
-                        username = sc.next();
-                        out.println("Enter password");
-                        password = sc.next();
-                        serverId = db.login(remoteObject, new Account(username, password));
-                        out.println(Long.toString(serverId));
+                        if(serverId == 0){
+                            out.println("Enter username");
+                            username = sc.next();
+                            out.println("Enter password");
+                            password = sc.next();
+                            serverId = db.login(remoteObject, new Account(username, password));
+                        } else {
+                            out.println("You are already logged in");
+                        }
                         break;
                         
                     case "LOGOUT":
@@ -69,13 +72,13 @@ public class ConsoleManager implements Runnable{
                         break;
                         
                     case "REGISTER":
-                        if(serverId != 0){
+                        if(serverId == 0){
                             out.println("Enter username");
                             username = sc.next();
                             out.println("Enter password");
                             password = sc.next();
                             try{
-                                db.register(username, password);
+                                serverId = db.register(remoteObject, new Account(username, password));
                             } catch (AccountException aee){
                                 out.println(aee.getMessage());
                             } 
