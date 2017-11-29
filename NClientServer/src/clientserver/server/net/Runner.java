@@ -14,7 +14,6 @@ import java.util.Queue;
 import java.util.concurrent.ForkJoinPool;
 
 // @author Jonas Iacobi
-
 public class Runner implements Runnable{
     
     private final String PROMPT = "Guess a letter amigo:";
