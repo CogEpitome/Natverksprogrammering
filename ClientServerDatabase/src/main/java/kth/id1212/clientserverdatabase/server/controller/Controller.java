@@ -9,9 +9,12 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.List;
+import kth.id1212.clientserverdatabase.common.Account;
+import kth.id1212.clientserverdatabase.common.Client;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.integration.ServerDAO;
 import kth.id1212.clientserverdatabase.server.model.AccountException;
+import kth.id1212.clientserverdatabase.server.model.ClientManager;
 
 /**
  *
@@ -19,6 +22,7 @@ import kth.id1212.clientserverdatabase.server.model.AccountException;
  */
 public class Controller extends UnicastRemoteObject implements DB {
     private final ServerDAO dao;
+    private final ClientManager clientManager = new ClientManager();
     
     public Controller(String dbtype, String source) throws RemoteException {
         super();
@@ -27,10 +31,32 @@ public class Controller extends UnicastRemoteObject implements DB {
     }
     
     @Override
-    public synchronized void register(String username, String password) throws AccountException{
+    public synchronized long login(Client remoteObject, Account account){
+        if(dao.userExists(account.getUsername())){
+            long clientId = clientManager.createClient(remoteObject, account);
+            clientManager.notifyLogin(clientId);
+            return clientId;
+        } else {
+            try{
+                remoteObject.receive("Login failed, no such user exists");
+            } catch (RemoteException re){
+                System.out.println("Couldn't send login failure notice to remote client");
+            }
+        }
+        return 0;
+    }
+    
+    @Override
+    public synchronized void logout(long id){
+        clientManager.removeHolder(id);
+    }
+    
+    @Override
+    public synchronized long register(Client remoteObject, Account account) throws AccountException{
         try{
-            if(!dao.userExists(username)){
-                dao.register(username, password);
+            if(!dao.userExists(account.getUsername())){
+                dao.register(account);
+                return login(remoteObject, account);
             } else {
                 throw new AccountException("An account with this username already exists!");
             }

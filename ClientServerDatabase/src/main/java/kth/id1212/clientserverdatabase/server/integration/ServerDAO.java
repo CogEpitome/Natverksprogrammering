@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import kth.id1212.clientserverdatabase.common.Account;
 
 /**
  *
@@ -106,10 +107,10 @@ public class ServerDAO {
         }
     }
     
-    public void register(String username, String password) throws RuntimeException{
+    public void register(Account account) throws RuntimeException{
         try{            
-            registerUserStatement.setString(1, username);
-            registerUserStatement.setString(2, password);
+            registerUserStatement.setString(1, account.getUsername());
+            registerUserStatement.setString(2, account.getPassword());
             registerUserStatement.executeUpdate();
         } catch(SQLException e){
             throw new RuntimeException("Failed to register user", e);
