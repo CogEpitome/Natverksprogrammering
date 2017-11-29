@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.integration.ServerDAO;
+import kth.id1212.clientserverdatabase.server.model.AccountException;
 
 /**
  *
@@ -25,7 +26,37 @@ public class Controller extends UnicastRemoteObject implements DB {
        
     }
     
-    //DB manipulation methods overrides
+    @Override
+    public synchronized void register(String username, String password) throws AccountException{
+        try{
+            if(!dao.userExists(username)){
+                dao.register(username, password);
+            } else {
+                throw new AccountException("An account with this username already exists!");
+            }
+        } catch(AccountException aee){
+            throw new AccountException("An account with this username already exists!");
+        }
+    }
+    
+    @Override
+    public synchronized void remove(String username, String password) throws AccountException{
+        try{
+            if(dao.userExists(username)){
+                if(dao.credentialsMatch(username, password)){
+                    dao.remove(username);
+                } else {
+                    throw new AccountException("Incorrect credentials");
+                }
+            } else {
+                throw new AccountException("No such account exists!");
+            }
+        } catch(AccountException aee){
+            throw new AccountException("Something went wrong");
+        }
+    }
+    
+    
     @Override
     public synchronized List<String> listUsers() throws SQLException {
         try{

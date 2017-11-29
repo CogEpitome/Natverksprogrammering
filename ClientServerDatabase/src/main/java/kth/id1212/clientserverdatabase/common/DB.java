@@ -9,6 +9,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
+import kth.id1212.clientserverdatabase.server.model.AccountException;
 
 /**
  *
@@ -18,5 +19,9 @@ public interface DB extends Remote{
     public static final String DB_NAME_IN_REGISTRY = "database_hw3";
     
     //Methods for manipulating db
+    public void register(String username, String password) throws RemoteException, AccountException;
+    
+    public void remove(String username, String password) throws RemoteException, AccountException;
+    
     public List<String> listUsers() throws RemoteException, SQLException;
 }
