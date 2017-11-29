@@ -6,9 +6,12 @@
 package kth.id1212.clientserverdatabase.client.view;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import kth.id1212.clientserverdatabase.common.Account;
+import kth.id1212.clientserverdatabase.common.Client;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.model.AccountException;
 
@@ -21,10 +24,14 @@ public class ConsoleManager implements Runnable{
     private final Scanner sc = new Scanner(System.in);
     private DB db;
     private boolean running;
+    private long serverId;
+    private Client remoteObject;
     
-    public void start(DB db){
+    public void start(DB db) throws RemoteException{
         this.db = db;
-        running = true;
+        this.remoteObject = new ConsoleOutput();
+        this.running = true;
+        this.serverId = 0;
         new Thread(this).start();
     }
     
@@ -41,18 +48,42 @@ public class ConsoleManager implements Runnable{
                             out.println(user);
                         }
                         break;
-                        
-                    case "REGISTER":
+                    
+                    case "LOGIN":
                         out.println("Enter username");
                         username = sc.next();
                         out.println("Enter password");
                         password = sc.next();
-                        try{
-                            db.register(username, password);
-                        } catch (AccountException aee){
-                            out.println(aee.getMessage());
+                        serverId = db.login(remoteObject, new Account(username, password));
+                        out.println(Long.toString(serverId));
+                        break;
+                        
+                    case "LOGOUT":
+                        if(serverId != 0){
+                            running = false;
+                            db.logout(serverId);
+                            UnicastRemoteObject.unexportObject(remoteObject, false);
+                        } else {
+                            out.println("You are not logged in");
                         }
                         break;
+                        
+                    case "REGISTER":
+                        if(serverId != 0){
+                            out.println("Enter username");
+                            username = sc.next();
+                            out.println("Enter password");
+                            password = sc.next();
+                            try{
+                                db.register(username, password);
+                            } catch (AccountException aee){
+                                out.println(aee.getMessage());
+                            } 
+                        } else {
+                            out.println("You are already logged in");
+                            }
+                        break;
+                        
                     case "REMOVE":
                         out.println("Enter username");
                         username = sc.next();
@@ -77,5 +108,14 @@ public class ConsoleManager implements Runnable{
             }
         }
             
+    }
+    
+    private class ConsoleOutput extends UnicastRemoteObject implements Client {
+        public ConsoleOutput() throws RemoteException{}
+        
+        @Override
+        public void receive(String msg){
+            out.println((String) msg);
+        }
     }
 }

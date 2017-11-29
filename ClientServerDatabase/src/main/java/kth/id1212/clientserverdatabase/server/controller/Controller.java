@@ -9,9 +9,12 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.List;
+import kth.id1212.clientserverdatabase.common.Account;
+import kth.id1212.clientserverdatabase.common.Client;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.integration.ServerDAO;
 import kth.id1212.clientserverdatabase.server.model.AccountException;
+import kth.id1212.clientserverdatabase.server.model.ClientManager;
 
 /**
  *
@@ -19,11 +22,24 @@ import kth.id1212.clientserverdatabase.server.model.AccountException;
  */
 public class Controller extends UnicastRemoteObject implements DB {
     private final ServerDAO dao;
+    private final ClientManager clientManager = new ClientManager();
     
     public Controller(String dbtype, String source) throws RemoteException {
         super();
         dao = new ServerDAO(dbtype, source);
        
+    }
+    
+    @Override
+    public synchronized long login(Client remoteObject, Account account){
+        long clientId = clientManager.createClient(remoteObject, account);
+        clientManager.notifyLogin(clientId);
+        return clientId;
+    }
+    
+    @Override
+    public synchronized void logout(long id){
+        clientManager.removeHolder(id);
     }
     
     @Override
