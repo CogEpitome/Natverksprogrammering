@@ -13,14 +13,23 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import kth.id1212.clientserverdatabase.common.Account;
+import kth.id1212.clientserverdatabase.server.model.FileDTO;
 
 /**
  *
  * @author Jonas
  */
 public class ServerDAO {
-    private static final String TABLE_NAME = "ACCOUNT";
-    private static final String COLUMN_NAME = "";
+    private static final String ACCOUNT_TABLE_NAME = "ACCOUNT";
+    private static final String CATALOG_TABLE_NAME = "CATALOG";
+    
+    private static final String FILENAME_COLUMN_NAME = "FILENAME";
+    private static final String SIZE_COLUMN_NAME = "SIZE";
+    private static final String OWNER_COLUMN_NAME = "OWNER";
+    private static final String ACCESS_COLUMN_NAME = "ACCESS";
+    private static final String PERMISSIONS_COLUMN_NAME = "PERMISSIONS";
+    private static final String NOTIFY_COLUMN_NAME = "NOTIFY";
+    
     private static final String USERNAME_COLUMN_NAME = "USERNAME";
     private static final String PASSWORD_COLUMN_NAME = "PASSWORD";
     
@@ -34,6 +43,11 @@ public class ServerDAO {
     private PreparedStatement getCredentialsStatement;
     private PreparedStatement removeUserStatement;
     
+    private PreparedStatement selectFilesStatement;
+    private PreparedStatement registerFileStatement;
+    private PreparedStatement getFileDataStatement;
+    private PreparedStatement removeFileStatement;
+    
     public ServerDAO(String dbtype, String source) throws RuntimeException{
         try{
             Connection connection = createSource(dbtype, source);
@@ -46,8 +60,12 @@ public class ServerDAO {
     private Connection createSource(String type, String source) throws ClassNotFoundException, SQLException{
         Connection connection = connectDB(type, source);
         Statement statement = connection.createStatement();
-        if(!tableExists(connection)){
-            statement.executeUpdate("CREATE TABLE "+TABLE_NAME+" ("+USERNAME_COLUMN_NAME+" VARCHAR(32) PRIMARY KEY, " + PASSWORD_COLUMN_NAME + " VARCHAR(32))");
+        if(!tableExists(connection, ACCOUNT_TABLE_NAME)){
+            statement.executeUpdate("CREATE TABLE "+ACCOUNT_TABLE_NAME+" ("+USERNAME_COLUMN_NAME+" VARCHAR(32) PRIMARY KEY, " + PASSWORD_COLUMN_NAME + " VARCHAR(32))");
+        }
+        if(!tableExists(connection, CATALOG_TABLE_NAME)){
+            statement.executeUpdate("CREATE TABLE "+CATALOG_TABLE_NAME+" ("+FILENAME_COLUMN_NAME+" VARCHAR(32) PRIMARY KEY, " + SIZE_COLUMN_NAME + " INT, "
+                   + OWNER_COLUMN_NAME +" VARCHAR(32), " + ACCESS_COLUMN_NAME + " VARCHAR(32), " + PERMISSIONS_COLUMN_NAME + " VARCHAR(32), " + NOTIFY_COLUMN_NAME + " INT)");
         }
         return connection;
     }
@@ -65,12 +83,12 @@ public class ServerDAO {
         }
     }
     
-    private boolean tableExists(Connection connection) throws SQLException{
+    private boolean tableExists(Connection connection, String tablename) throws SQLException{
         int nameColumnIndex = 3;
         DatabaseMetaData data = connection.getMetaData();
         try(ResultSet rs = data.getTables(null, null, null, null)){
             for(; rs.next();){
-                if(rs.getString(nameColumnIndex).equalsIgnoreCase(TABLE_NAME)){
+                if(rs.getString(nameColumnIndex).equalsIgnoreCase(tablename)){
                     return true;
                 }
             }
@@ -133,7 +151,6 @@ public class ServerDAO {
         try(ResultSet users = selectUsersStatement.executeQuery()){
             while(users.next()){
                 usernames.add(users.getString(1));
-                System.out.println("name "+users.getString(1));
             }
         } catch (SQLException se){
             throw new RuntimeException("Failed to list users", se);
@@ -141,11 +158,79 @@ public class ServerDAO {
         return usernames;
     }
     
+    public List<FileDTO> listFiles() throws SQLException{
+        List<FileDTO> files = new ArrayList<>();
+        try(ResultSet file = selectFilesStatement.executeQuery()){
+            while(file.next()){
+                files.add(new FileDTO(file.getString(1), file.getInt(2), file.getString(3), file.getString(4), file.getString(5), file.getInt(6)));
+            }
+        } catch (SQLException se){
+            throw new RuntimeException("Failed to list files", se);
+        }
+        return files;
+    }
+    
+    public void addFile(FileDTO file){
+        try{
+            registerFileStatement.setString(1, file.getName());
+            registerFileStatement.setInt(2, file.getSize());
+            registerFileStatement.setString(3, file.getOwner());
+            registerFileStatement.setString(4, file.getAccess());
+            registerFileStatement.setString(5, file.getPermissions());
+            registerFileStatement.setInt(6, file.getNotifyId());
+            registerFileStatement.executeUpdate();
+        } catch(SQLException se){
+            throw new RuntimeException("failed to register file", se);
+        }
+    }
+    
+    public void removeFile(FileDTO file){
+        try{
+            removeFileStatement.setString(1, file.getName());
+            removeFileStatement.executeUpdate();
+        } catch(SQLException se){
+            throw new RuntimeException("filed to remove file", se);
+        }
+    }
+    
+    public FileDTO getFile(String filename){
+        try{
+            List<FileDTO> files = listFiles();
+            for(FileDTO file : files){
+                if(file.getName().equals(filename)){
+                    return file;
+                }
+            }
+            return null;
+        } catch(SQLException se){
+            throw new RuntimeException("failed to get file");
+        }
+    }
+    
+    public boolean fileExists(String filename){
+        try{
+           List<FileDTO> files = listFiles();
+           for(FileDTO tempfile : files){
+               if(tempfile.getName().equalsIgnoreCase(filename)){
+                   return true;
+               }
+           }
+           return false;
+        } catch (SQLException se){
+            throw new RuntimeException("Error in fileExists of ServerDAO", se);
+        }
+    }
+    
     //Here are all the SQL database methods such as creating tables and such.
     private void prepareStatements(Connection connection) throws SQLException{
-        selectUsersStatement = connection.prepareStatement("SELECT * FROM " + TABLE_NAME);
-        registerUserStatement = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " VALUES (?, ?)");
-        removeUserStatement = connection.prepareStatement("DELETE FROM " + TABLE_NAME + " WHERE username=?");
-        getCredentialsStatement = connection.prepareStatement("SELECT " + PASSWORD_COLUMN_NAME + " FROM " + TABLE_NAME + " WHERE " + USERNAME_COLUMN_NAME + "=?");
+        selectUsersStatement = connection.prepareStatement("SELECT * FROM " + ACCOUNT_TABLE_NAME);
+        registerUserStatement = connection.prepareStatement("INSERT INTO " + ACCOUNT_TABLE_NAME + " VALUES (?, ?)");
+        removeUserStatement = connection.prepareStatement("DELETE FROM " + ACCOUNT_TABLE_NAME + " WHERE username=?");
+        getCredentialsStatement = connection.prepareStatement("SELECT " + PASSWORD_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + USERNAME_COLUMN_NAME + "=?");
+        
+        selectFilesStatement = connection.prepareStatement("SELECT * FROM " + CATALOG_TABLE_NAME);
+        registerFileStatement = connection.prepareStatement("INSERT INTO " + CATALOG_TABLE_NAME + " VALUES (?, ?, ?, ?, ?, ?)");
+        removeFileStatement = connection.prepareStatement("DELETE FROM " + CATALOG_TABLE_NAME + " WHERE filename=?");
+        getFileDataStatement = connection.prepareStatement("SELECT * FROM " + CATALOG_TABLE_NAME + " WHERE " + FILENAME_COLUMN_NAME + "=?");
     }
 }

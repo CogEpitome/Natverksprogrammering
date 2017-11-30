@@ -12,7 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.controller.Controller;
-import kth.id1212.clientserverdatabase.server.integration.ServerDAO;
 
 /**
  *

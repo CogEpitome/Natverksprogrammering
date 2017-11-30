@@ -14,12 +14,12 @@ import kth.id1212.clientserverdatabase.common.Client;
  */
 public class AccountHolder {
     
-  private final long id;
+  private final int id;
   private final Client remoteObject;
   private final ClientManager manager;
   private String username;
     
-    public AccountHolder(long id, String username, Client remoteObject, ClientManager manager){
+    public AccountHolder(int id, String username, Client remoteObject, ClientManager manager){
         this.id = id;
         this.username = username;
         this.remoteObject = remoteObject;
@@ -32,5 +32,9 @@ public class AccountHolder {
         } catch(RemoteException re){
             System.out.println("Failed to send message to remoteObject");
         }
+    }
+    
+    public String getUsername(){
+        return username;
     }
 }

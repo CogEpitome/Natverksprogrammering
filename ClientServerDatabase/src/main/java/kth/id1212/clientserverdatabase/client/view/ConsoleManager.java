@@ -14,6 +14,7 @@ import kth.id1212.clientserverdatabase.common.Account;
 import kth.id1212.clientserverdatabase.common.Client;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.model.AccountException;
+import kth.id1212.clientserverdatabase.server.model.FileDTO;
 
 /**
  *
@@ -24,7 +25,7 @@ public class ConsoleManager implements Runnable{
     private final Scanner sc = new Scanner(System.in);
     private DB db;
     private boolean running;
-    private long serverId;
+    private int serverId;
     private Client remoteObject;
     
     public void start(DB db) throws RemoteException{
@@ -37,18 +38,69 @@ public class ConsoleManager implements Runnable{
     
     @Override
     public void run(){
-        String username, password;
+        String username, password, filename;
         while(running){
             try{
                 String in = sc.next();
                 switch(in.toUpperCase()){
-                    case "LIST":
-                        List<String> users = db.listUsers();
-                        for(String user : users){
-                            out.println(user);
+                    case "BUILD":
+                        FileDTO file1 = new FileDTO("publicMine.txt", 10, "u", "public", "r", serverId);
+                        FileDTO file2 = new FileDTO("privateMine.txt", 10, "u", "private", "r", serverId);
+                        FileDTO file3 = new FileDTO("publicWrite.txt", 10, "lolbird", "public", "w", serverId);
+                        FileDTO file4 = new FileDTO("privateWrite.txt", 10, "lolbird", "private", "w", serverId);
+                        FileDTO file5 = new FileDTO("publicRead.txt", 10, "lolbird", "public", "r", serverId);
+                        FileDTO file6 = new FileDTO("privateRead.txt", 10, "lolbird", "private", "r", serverId);
+                        try{
+                            db.addFile(file1);
+                            db.addFile(file2);
+                            db.addFile(file3);
+                            db.addFile(file4);
+                            db.addFile(file5);
+                            db.addFile(file6);
+                        } catch (AccountException ae){
+                            out.println(ae.getMessage());
                         }
                         break;
                     
+                    case "LIST":
+                        out.println("Listing...");
+                        List<FileDTO> files = db.listFiles(serverId);
+                        out.println("Returned files of length "+Integer.toString(files.size()));
+                        for(FileDTO file : files){
+                            out.println("Name: "+file.getName()+" | Size: "+Integer.toString(file.getSize())+" | Owner: "+file.getOwner()+" | Access: "+file.getAccess()+" | Permissions: "+file.getPermissions());
+                        }
+                        break;
+                    
+                    case "UPLOAD":
+                        FileDTO file = new FileDTO("hi.txt", 10, "lolbird", "public", "rw", serverId);
+                        try{
+                            db.addFile(file);
+                        } catch (AccountException ae){
+                            out.println(ae.getMessage());
+                        }
+                        break;
+                        
+                    case "DOWNLOAD":
+                        out.print("Enter the name of the file you want to download: ");
+                        filename = sc.next();
+                        try{
+                            db.download(filename, serverId);
+                        } catch (AccountException ae){
+                            out.println(ae.getMessage());
+                        }
+                        break;
+                        
+                    case "DELETE":
+                        out.print("Enter name of file to delete: ");
+                        filename = sc.next();
+                        try{
+                            db.removeFile(filename, serverId);
+                        } catch (AccountException ae){
+                            out.println(ae.getMessage());
+                        }
+                        
+                        break;
+                        
                     case "LOGIN":
                         if(serverId == 0){
                             out.println("Enter username");

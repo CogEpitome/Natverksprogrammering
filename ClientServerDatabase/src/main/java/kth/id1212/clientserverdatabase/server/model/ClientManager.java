@@ -18,24 +18,31 @@ import kth.id1212.clientserverdatabase.common.Client;
  */
 public class ClientManager {
     private final Random idGen = new Random();
-    private final Map<Long, AccountHolder> holders = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, AccountHolder> holders = Collections.synchronizedMap(new HashMap<>());
     
-    public long createClient(Client remoteObject, Account account){
-        long clientId = idGen.nextLong();
+    public int createClient(Client remoteObject, Account account){
+        int clientId = idGen.nextInt();
         AccountHolder holder = new AccountHolder(clientId, account.getUsername(), remoteObject, this);
         holders.put(clientId, holder);
         return clientId;
     }
     
-    public AccountHolder findHolder(long id){
+    public AccountHolder findHolder(int id){
         return holders.get(id);
     }
     
-    public void removeHolder(long id){
+    public void removeHolder(int id){
         holders.remove(id);
     }
     
-    public void notifyLogin(long id){
+    public void notifyLogin(int id){
         findHolder(id).send("Successfully logged in!");
+    }
+    
+    public void notifyFilechange(int id, String filename, String username, String action){
+        AccountHolder holder = findHolder(id);
+        if(holder != null){
+            holder.send(username+" "+action+" your file "+filename+"!");
+        }
     }
 }
