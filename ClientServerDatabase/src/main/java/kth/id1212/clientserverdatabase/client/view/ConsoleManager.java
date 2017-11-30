@@ -5,11 +5,14 @@
  */
 package kth.id1212.clientserverdatabase.client.view;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import kth.id1212.clientserverdatabase.client.net.OutHandler;
+import kth.id1212.clientserverdatabase.client.net.ServerConnection;
 import kth.id1212.clientserverdatabase.common.Account;
 import kth.id1212.clientserverdatabase.common.Client;
 import kth.id1212.clientserverdatabase.common.DB;
@@ -28,6 +31,8 @@ public class ConsoleManager implements Runnable{
     private int serverId;
     private Client remoteObject;
     
+    private final ServerConnection serverConnection = new ServerConnection();
+    
     public void start(DB db) throws RemoteException{
         this.db = db;
         this.remoteObject = new ConsoleOutput();
@@ -39,10 +44,17 @@ public class ConsoleManager implements Runnable{
     @Override
     public void run(){
         String username, password, filename;
+        
         while(running){
             try{
                 String in = sc.next();
                 switch(in.toUpperCase()){
+                    case "SENDFORLOLS":
+                        if(serverId != 0){
+                            serverConnection.send("testing");
+                        }
+                        break;
+                    
                     case "BUILD":
                         FileDTO file1 = new FileDTO("publicMine.txt", 10, "u", "public", "r", serverId);
                         FileDTO file2 = new FileDTO("privateMine.txt", 10, "u", "private", "r", serverId);
@@ -103,6 +115,13 @@ public class ConsoleManager implements Runnable{
                         
                     case "LOGIN":
                         if(serverId == 0){
+                            
+                            try{
+                                serverConnection.connect(new Out());
+                            } catch (IOException ioe){
+                                System.out.println("Failed to connect");
+                            }
+                            
                             out.println("Enter username");
                             username = sc.next();
                             out.println("Enter password");
@@ -171,6 +190,13 @@ public class ConsoleManager implements Runnable{
         @Override
         public void receive(String msg){
             out.println((String) msg);
+        }
+    }
+    
+    private class Out implements OutHandler{
+        @Override
+        public void handleReceived(String msg){
+            out.println(msg);
         }
     }
 }

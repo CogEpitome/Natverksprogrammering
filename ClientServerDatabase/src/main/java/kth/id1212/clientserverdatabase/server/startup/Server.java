@@ -12,6 +12,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import kth.id1212.clientserverdatabase.common.DB;
 import kth.id1212.clientserverdatabase.server.controller.Controller;
+import kth.id1212.clientserverdatabase.server.net.FileServer;
 
 /**
  *
@@ -23,10 +24,13 @@ public class Server {
     private final String dbManagementSystem = "derby";
     private final String source = "HW4DB";
     
+    private static final int PORT = 9080;
+    
     public static void main(String[] args){
         try{
             Server server = new Server();
             server.startServant();
+            new Thread(new FileServer(PORT)).start();
             System.out.println("Server started successfully!");
         } catch(RemoteException | MalformedURLException e){
             System.out.println("Server failed to start :<");

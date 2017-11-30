@@ -3,6 +3,7 @@ package clientserver.client.view;
 
 import clientserver.client.controller.Controller;
 import clientserver.client.net.OutHandler;
+import clientserver.client.net.ServerConnection;
 import java.net.ConnectException;
 import java.util.*;
 
@@ -15,6 +16,8 @@ public class ConsoleManager implements Runnable{
     private final int port;
     private final String server;
     boolean active = true;
+    
+    private final ServerConnection serverConnection = new ServerConnection();
     
     //Constructor
     public ConsoleManager(Controller cont, String server, int port){ 
