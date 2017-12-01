@@ -44,7 +44,7 @@ public class Runner implements Runnable{
                 String received = read();
                 if(received != null)
                 {
-                    send("This is a server reply to "+received);
+                    send("Server received "+received+" as a string via TCP.");
                 }
             }
             catch(IOException ioe)

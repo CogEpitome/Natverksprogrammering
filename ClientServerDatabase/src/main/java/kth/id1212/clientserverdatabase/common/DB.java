@@ -39,4 +39,6 @@ public interface DB extends Remote{
     public String download(String filename, int id) throws RemoteException, AccountException;
     
     public void notifyChange(int id, String filename, String username, String action) throws RemoteException;
+    
+    public String getUsername(int id) throws RemoteException;
 }

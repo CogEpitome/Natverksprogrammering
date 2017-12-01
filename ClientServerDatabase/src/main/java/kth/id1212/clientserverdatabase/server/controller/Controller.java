@@ -36,9 +36,17 @@ public class Controller extends UnicastRemoteObject implements DB {
     @Override
     public synchronized int login(Client remoteObject, Account account){
         if(dao.userExists(account.getUsername())){
-            int clientId = clientManager.createClient(remoteObject, account);
-            clientManager.notifyLogin(clientId);
-            return clientId;
+            if(dao.credentialsMatch(account.getUsername(), account.getPassword())){
+                int clientId = clientManager.createClient(remoteObject, account);
+                clientManager.notifyLogin(clientId);
+                return clientId;
+            } else {
+                try{
+                    remoteObject.receive("Login failed, incorrect credentials");
+                } catch (RemoteException re){
+                    System.out.println("Couldn't send login failure notice to remote client");
+                }    
+            }
         } else {
             try{
                 remoteObject.receive("Login failed, no such user exists");
@@ -160,7 +168,9 @@ public class Controller extends UnicastRemoteObject implements DB {
                 AccountHolder user = clientManager.findHolder(id); 
                 String username = user.getUsername();
                 notifyChange(dao.getFile(filename).getNotifyId(), filename, username, "downloaded");
-                    }
+                    } else {
+                return "You must be logged in to download files";
+            }
             return filename+" was found on the server!";
         } else {
             throw new AccountException("This file doesn not exist on the server, please try a different file name");
@@ -171,4 +181,9 @@ public class Controller extends UnicastRemoteObject implements DB {
     public synchronized void notifyChange(int id, String filename, String username, String action){
         clientManager.notifyFilechange(id, filename, username, action);
         }
+    
+    @Override
+    public synchronized String getUsername(int id){
+        return clientManager.findHolder(id).getUsername();
+    }
 }

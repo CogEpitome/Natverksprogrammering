@@ -5,6 +5,7 @@
  */
 package kth.id1212.clientserverdatabase.client.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -31,6 +32,8 @@ public class ConsoleManager implements Runnable{
     private int serverId;
     private Client remoteObject;
     
+    private final String HELP_PROMPT = "Enter ? to show available commands";
+    private final String AVAILABLE_COMMANDS = "register | login | logout | upload | download | list | delete | remove";
     private final ServerConnection serverConnection = new ServerConnection();
     
     public void start(DB db) throws RemoteException{
@@ -44,51 +47,43 @@ public class ConsoleManager implements Runnable{
     @Override
     public void run(){
         String username, password, filename;
+        out.println("Welcome to the program, here is a list of available commands:");
+        out.println(AVAILABLE_COMMANDS);
         
+        buildDB();
         while(running){
             try{
                 String in = sc.next();
                 switch(in.toUpperCase()){
-                    case "SENDFORLOLS":
-                        if(serverId != 0){
-                            serverConnection.send("testing");
-                        }
+                    case "?":
+                        out.println("Available commands:");
+                        out.println(AVAILABLE_COMMANDS);
                         break;
                     
-                    case "BUILD":
-                        FileDTO file1 = new FileDTO("publicMine.txt", 10, "u", "public", "r", serverId);
-                        FileDTO file2 = new FileDTO("privateMine.txt", 10, "u", "private", "r", serverId);
-                        FileDTO file3 = new FileDTO("publicWrite.txt", 10, "lolbird", "public", "w", serverId);
-                        FileDTO file4 = new FileDTO("privateWrite.txt", 10, "lolbird", "private", "w", serverId);
-                        FileDTO file5 = new FileDTO("publicRead.txt", 10, "lolbird", "public", "r", serverId);
-                        FileDTO file6 = new FileDTO("privateRead.txt", 10, "lolbird", "private", "r", serverId);
-                        try{
-                            db.addFile(file1);
-                            db.addFile(file2);
-                            db.addFile(file3);
-                            db.addFile(file4);
-                            db.addFile(file5);
-                            db.addFile(file6);
-                        } catch (AccountException ae){
-                            out.println(ae.getMessage());
+                    case "UPLOAD":
+                        if(serverId != 0){
+                            out.print("Enter name of file to upload: ");
+                            filename = sc.next();
+                            try{
+                                FileDTO file = createFileDTO(filename);
+                                if(file != null){
+                                    db.addFile(file);
+                                    serverConnection.send(file.getName());
+                                }
+                            } catch (AccountException ae){
+                                out.println(ae.getMessage());
+                            }
+                        } else {
+                            out.println("You must be logged in to upload a file");
+                            out.println(HELP_PROMPT);
                         }
                         break;
                     
                     case "LIST":
-                        out.println("Listing...");
+                        out.println("Files on server: ");
                         List<FileDTO> files = db.listFiles(serverId);
-                        out.println("Returned files of length "+Integer.toString(files.size()));
                         for(FileDTO file : files){
                             out.println("Name: "+file.getName()+" | Size: "+Integer.toString(file.getSize())+" | Owner: "+file.getOwner()+" | Access: "+file.getAccess()+" | Permissions: "+file.getPermissions());
-                        }
-                        break;
-                    
-                    case "UPLOAD":
-                        FileDTO file = new FileDTO("hi.txt", 10, "lolbird", "public", "rw", serverId);
-                        try{
-                            db.addFile(file);
-                        } catch (AccountException ae){
-                            out.println(ae.getMessage());
                         }
                         break;
                         
@@ -182,6 +177,54 @@ public class ConsoleManager implements Runnable{
             }
         }
             
+    }
+    
+    private void buildDB(){
+        try{
+            FileDTO file1 = new FileDTO("publicMine.txt", 10, "u", "public", "r", serverId);
+            FileDTO file2 = new FileDTO("privateMine.txt", 10, "u", "private", "r", serverId);
+            FileDTO file3 = new FileDTO("publicWrite.txt", 10, "lolbird", "public", "w", serverId);
+            FileDTO file4 = new FileDTO("privateWrite.txt", 10, "lolbird", "private", "w", serverId);
+            FileDTO file5 = new FileDTO("publicRead.txt", 10, "lolbird", "public", "r", serverId);
+            FileDTO file6 = new FileDTO("privateRead.txt", 10, "lolbird", "private", "r", serverId);
+            try{
+            db.addFile(file1);
+            db.addFile(file2);
+            db.addFile(file3);
+            db.addFile(file4);
+            db.addFile(file5);
+            db.addFile(file6);
+            } catch (AccountException ae){
+                out.println(ae.getMessage());
+            } 
+        }   catch (RemoteException re){
+            out.println("Not good, failed to build db");
+        }
+    }
+    
+    private FileDTO createFileDTO(String filename){
+        
+            try{
+                int size = 10;
+                String username = db.getUsername(serverId);
+                String access;
+                out.print("Upload with public or private access? (default is private)");
+                access = sc.next();
+                if(!access.equalsIgnoreCase("public") || !access.equalsIgnoreCase("private")){
+                    access = "private";
+                }
+                out.print("Upload with read only, or read and write permissions? (r/w)");
+                String permissions = sc.next();
+                if(!permissions.equalsIgnoreCase("r") || !permissions.equalsIgnoreCase("w")){
+                    permissions = "r";
+                }
+                FileDTO dto = new FileDTO(filename, size, username, access, permissions, serverId);
+                return dto;
+            } catch(RemoteException re){
+                out.println("remote exception occured");
+                out.println(re.getMessage());
+            }
+        return null;
     }
     
     private class ConsoleOutput extends UnicastRemoteObject implements Client {
