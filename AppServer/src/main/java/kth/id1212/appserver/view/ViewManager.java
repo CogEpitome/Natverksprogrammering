@@ -35,6 +35,7 @@ public class ViewManager implements Serializable {
     private Conversation conversation;
     
     public void initDatabase(){
+        startConversation();
         controller.initDatabase();
     }
     

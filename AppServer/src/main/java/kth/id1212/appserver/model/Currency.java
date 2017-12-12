@@ -18,18 +18,20 @@ import javax.persistence.Id;
  */
 @Entity
 public class Currency implements CurrencyDTO, Serializable{
-    @Id 
-    @Column(name = "NAME", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int currencyNo;
+    @Column(name="NAME")
     private String name;
     @Column(name="ABBR")
     private String abbr;
-    @Column(name="RATE")
+    @Column(name="RATE", nullable = false)
     private double rate;
 
     public Currency(){
     }
     
-    public Currency(String name, String abbr, float rate){
+    public Currency(String name, String abbr, double rate){
         this.name = name;
         this.abbr = abbr;
         this.rate = rate;

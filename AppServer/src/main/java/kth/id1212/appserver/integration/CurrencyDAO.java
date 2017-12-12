@@ -10,6 +10,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import kth.id1212.appserver.model.Currency;
 
 /**
@@ -30,10 +31,13 @@ public class CurrencyDAO {
         return currency;
     } 
     
+    @Transactional
     public void registerCurrency(Currency currency){
         if(!em.contains(currency)){
+            em.flush();
             em.persist(currency);
             em.flush();
+            System.out.println(currency.getName()+"persisted"); 
         }
     }
 }

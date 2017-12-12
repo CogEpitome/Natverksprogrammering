@@ -24,12 +24,12 @@ public class Controller{
     @EJB CurrencyDAO currencyDB;
     
     public void initDatabase(){
-        Currency currency1 = new Currency("Kronor","SEK",1);
-        Currency currency2 = new Currency("US Dollar","USD",8.7f);
-        Currency currency3 = new Currency("Euro","EUR",10);
+        //Currency currency1 = new Currency("Kronor","SEK",1.0);
+        //Currency currency2 = new Currency("US Dollar","USD",8.7);
+        Currency currency3 = new Currency("EuroBeuros","EUR",10.0);
         
-        currencyDB.registerCurrency(currency1);
-        currencyDB.registerCurrency(currency2);
+        //currencyDB.registerCurrency(currency1);
+        //currencyDB.registerCurrency(currency2);
         currencyDB.registerCurrency(currency3);
     }
     
