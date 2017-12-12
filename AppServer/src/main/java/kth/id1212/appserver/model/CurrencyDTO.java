@@ -10,8 +10,7 @@ package kth.id1212.appserver.model;
  * @author Jonas
  */
 public interface CurrencyDTO {
-    
     String getName();
     String getAbbr();
-    float getRate();
+    double getRate();
 }

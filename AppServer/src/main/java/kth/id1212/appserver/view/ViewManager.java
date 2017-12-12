@@ -30,8 +30,13 @@ public class ViewManager implements Serializable {
     private CurrencyDTO currencyTo;
     private String currencyFromId, currencyToId;
     private Exception conversionError;
+    private String searchedCurrencyFrom, searchedCurrencyTo;
     @Inject
     private Conversation conversation;
+    
+    public void initDatabase(){
+        controller.initDatabase();
+    }
     
     private void startConversation(){
         if(conversation.isTransient()){
@@ -59,24 +64,28 @@ public class ViewManager implements Serializable {
         return conversionError;
     }
     
-    public void findCurrencyFrom(){
+    public void findCurrency(){
         try{
             startConversation();
             conversionError = null;
-            //currencyFrom = controller.findCurrencyFrom(currencyFromId);
+            currencyFrom = controller.findCurrency(currencyFromId);
+            currencyTo = controller.findCurrency(currencyToId);
         } catch (Exception e){
             handleException(e);
         }
     }
     
-    public void findCurrencyTo(){
-        try{
-            startConversation();
-            conversionError = null;
-            //currencyTo = controller.findCurrencyTo(currencyToId);
-        } catch (Exception e){
-            handleException(e);
-        }
+    public void setSearchedCurrencyFrom(String searchedCurrency){
+        this.searchedCurrencyFrom = searchedCurrency;
+    }
+    public String getSearchedCurrencyFrom(){
+        return null;
+    }
+    public void setSearchedCurrencyTo(String searchedCurrency){
+        this.searchedCurrencyTo = searchedCurrency;
+    }
+    public String getSearchedCurrencyTo(){
+        return null;
     }
     
     public void setCurrencyFromId(String currencyFromId){
@@ -103,4 +112,7 @@ public class ViewManager implements Serializable {
         return currencyTo;
     }
     
+    public void convert(){
+        
+    }
 }

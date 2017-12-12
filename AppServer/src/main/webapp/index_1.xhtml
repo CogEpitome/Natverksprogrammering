@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Currency Converter</title>
+    </h:head>
+    <h:body>
+        <h1>Currency Converter</h1>
+        
+        <h4> to </h4>
+        
+        <p>
+            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value="From: "/>
+            <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
+            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value="To: "/>
+            <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
+            <h:outputText rendered="#{viewManager.currencyFrom == null}" value="Select a currency to convert"/>
+            <h:outputText rendered="#{viewManager.currencyTo == null}" value="Select a currency to convert to"/>
+        </p>
+        
+        <h:form>
+            <h4>Select currencies to convert</h4>
+            <p>
+                <h:outputLabel for="forcurrencyFromId" value="From: "/>
+                <h:inputText id="forcurrencyFromId" value="#{viewManager.currencyFromId}"/>
+                <h:outputLabel for="forcurrencyToId" value="To: "/>
+                <h:inputText id="forcurrencyToId" value="#{viewManager.currencyToId}"/>
+            </p>
+            <p>
+                <h:commandButton value="Convert" action="#{viewManager.convert}"/>
+            </p>
+        </h:form>
+    </h:body>
+</html>

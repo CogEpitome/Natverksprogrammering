@@ -6,22 +6,25 @@
 package kth.id1212.appserver.model;
 
 import java.io.Serializable;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Persistence;
 
 /**
  *
  * @author Jonas
  */
+@Entity
 public class Currency implements CurrencyDTO, Serializable{
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String name, abbr;
-    private float rate;
+    @Id 
+    @Column(name = "NAME", nullable = false)
+    private String name;
+    @Column(name="ABBR")
+    private String abbr;
+    @Column(name="RATE")
+    private double rate;
 
     public Currency(){
     }
@@ -41,7 +44,7 @@ public class Currency implements CurrencyDTO, Serializable{
         return abbr;
     }
     @Override
-    public float getRate(){
+    public double getRate(){
         return rate;
     }
 }

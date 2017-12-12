@@ -7,28 +7,26 @@
     </h:head>
     <h:body>
         <h1>Currency Converter</h1>
-        
-        <h4> to </h4>
-        
+
         <p>
-            <h:outputLabel for="currency1" rendered="#{viewManager.currencyFrom != null}" value="From: "/>
-            <h:outputText id="currency1" value="#{viewManager.currencyFrom.getName}"/>
-            <h:outputLabel for="currency2" rendered="#{viewManager.currencyTo != null}" value="To: "/>
-            <h:outputText id="currency2" value="#{viewManager.currencyTo.getName}"/>
-            <h:outputText rendered="#{viewManager.currencyFrom == null}" value="Select a currency to convert"/>
-            <h:outputText rendered="#{viewManager.currencyTo == null}" value="Select a currency to convert to"/>
+            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value="Currency From: "/>
+            <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
+            <br/>
+            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value="Currency To: "/>
+            <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
         </p>
-        
         <h:form>
-            <h4>Select currencies to convert</h4>
             <p>
-                <h:outputLabel for="currencyFromId" value="From: "/>
-                <h:inputText id="currencyFromId" value="#{viewManager.currencyFromId}"/>
-                <h:outputLabel for="currencyTo" value="To: "/>
-                <h:inputText id="currencyToId" value="#{viewManager.currencyToId}"/>
+                <h:outputLabel for="searchedCurrencyFrom" value="Convert from: "/>
+                <h:inputText id="searchedCurrencyFrom" value="#{viewManager.searchedCurrencyFrom}"/>
+                <h:outputLabel for="searchedCurrencyTo" value=" to: "/>
+                <h:inputText id="searchedCurrencyTo" value="#{viewManager.searchedCurrencyTo}"/>
             </p>
             <p>
-                <h:commandButton value="Convert" action="#{viewManager.convert}"/>
+                <h:commandButton value="Search" action="#{viewManager.findCurrency}"/>
+            </p>
+            <p>
+                <h:commandButton value="Init database" action="#{viewManager.initDatabase}"/>
             </p>
         </h:form>
     </h:body>

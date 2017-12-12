@@ -11,6 +11,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import kth.id1212.appserver.integration.CurrencyDAO;
+import kth.id1212.appserver.model.Currency;
+import kth.id1212.appserver.model.CurrencyDTO;
 
 /**
  *
@@ -20,4 +22,18 @@ import kth.id1212.appserver.integration.CurrencyDAO;
 @Stateless
 public class Controller{
     @EJB CurrencyDAO currencyDB;
+    
+    public void initDatabase(){
+        Currency currency1 = new Currency("Kronor","SEK",1);
+        Currency currency2 = new Currency("US Dollar","USD",8.7f);
+        Currency currency3 = new Currency("Euro","EUR",10);
+        
+        currencyDB.registerCurrency(currency1);
+        currencyDB.registerCurrency(currency2);
+        currencyDB.registerCurrency(currency3);
+    }
+    
+    public Currency findCurrency(String name) throws Exception{
+        return currencyDB.findCurrency(name);
+    }
 }

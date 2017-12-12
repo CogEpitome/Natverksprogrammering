@@ -9,7 +9,7 @@
     <navigation-rule>
         <from-view-id>/index.xhtml</from-view-id>
         <navigation-case>
-            <if>#{!acctManager.success}</if>
+            <if>#{!viewManager.success}</if>
             <to-view-id>/error.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
