@@ -9,22 +9,28 @@
         <h1>Inaccurate Currency Converter</h1>
 
         <p>
-            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value="Currency From: "/>
+            <h:outputLabel for="currencyFromAmount" rendered="#{viewManager.currencyFromAmount != 0}" value=""/>
+            <h:outputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
+            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value=" "/>
             <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
-            <br/>
-            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value="Currency To: "/>
+            <h:outputLabel for="currencyToValue" rendered="#{viewManager.currencyToValue != 0}" value=" is worth "/>
+            <h:outputText id="currencyToValue" value="#{viewManager.currencyToValue}"/>
+            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value=" "/>
             <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
         </p>
         <h:form>
             <p>
                 <h:outputLabel for="currencyFromAbbr" value="Convert from: "/>
                 <h:inputText id="currencyFromAbbr" value="#{viewManager.currencyFromAbbr}"/>
-                <h:outputLabel for="currencyToAbbr" value=" to: "/>
+                <br/>
+                <h:outputLabel for="currencyToAbbr" value="Convert to: "/>
                 <h:inputText id="currencyToAbbr" value="#{viewManager.currencyToAbbr}"/>
+                <br/>
+                <h:outputLabel for="currencyFromAmount" value="Amount to convert: "/>
+                <h:inputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
             </p>
             <p>
-                <h:commandButton value="Find CurrencyFrom" action="#{viewManager.findCurrencyFrom()}"/>
-                <h:commandButton value="Find CurrencyTo" action="#{viewManager.findCurrencyTo()}"/>
+                <h:commandButton value="Convert" action="#{viewManager.convert()}"/>
             </p>
             <p>
                 <h:commandButton value="Init database" action="#{viewManager.initCurrencies()}"/>

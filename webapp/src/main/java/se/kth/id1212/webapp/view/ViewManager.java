@@ -27,6 +27,8 @@ public class ViewManager implements Serializable{
     private CurrencyDTO currencyFrom;
     private CurrencyDTO currencyTo;
     private String currencyFromAbbr;
+    private float currencyFromAmount;
+    private float currencyToValue;
     private String currencyToAbbr;
     private Exception conversionError;
     @Inject
@@ -57,6 +59,19 @@ public class ViewManager implements Serializable{
         return currencyTo;
     }
     
+    public void setCurrencyFromAmount(float currencyFromAmount){
+        this.currencyFromAmount = currencyFromAmount;
+    }
+    public float getCurrencyFromAmount(){
+        return currencyFromAmount;
+    }
+    public void setCurrencyToValue(float currencyToValue){
+        this.currencyToValue = currencyToValue;
+    }
+    public float getCurrencyToValue(){
+        return currencyToValue;
+    }
+    
     public boolean getSuccess(){
         return conversionError == null;
     }
@@ -78,15 +93,6 @@ public class ViewManager implements Serializable{
         return null;
     }
     
-    private void readCurrencyFrom(){
-        currencyFromAbbr = currencyFrom.getAbbr();
-        findCurrencyFrom();
-    }
-    private void readCurrencyTo(){
-        currencyToAbbr = currencyTo.getAbbr();
-        findCurrencyTo();
-    }
-    
     public void findCurrencyFrom(){
         try{
             startConversation();
@@ -104,6 +110,11 @@ public class ViewManager implements Serializable{
         } catch (Exception e){
             handleException(e);
         }
+    }
+    public void convert(){
+        currencyFrom = controller.findCurrency(currencyFromAbbr);
+        currencyTo = controller.findCurrency(currencyToAbbr);
+        currencyToValue = controller.convert(currencyFrom, currencyTo, currencyFromAmount);
     }
     
     public void initCurrencies(){
