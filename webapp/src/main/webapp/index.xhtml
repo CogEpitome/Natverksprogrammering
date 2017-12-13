@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Inaccurate Currency Converter</title>
+    </h:head>
+    <h:body>
+        <h1>Inaccurate Currency Converter</h1>
+
+        <p>
+            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value="Currency From: "/>
+            <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
+            <br/>
+            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value="Currency To: "/>
+            <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
+        </p>
+        <h:form>
+            <p>
+                <h:outputLabel for="currencyFromAbbr" value="Convert from: "/>
+                <h:inputText id="currencyFromAbbr" value="#{viewManager.currencyFromAbbr}"/>
+                <h:outputLabel for="currencyToAbbr" value=" to: "/>
+                <h:inputText id="currencyToAbbr" value="#{viewManager.currencyToAbbr}"/>
+            </p>
+            <p>
+                <h:commandButton value="Find CurrencyFrom" action="#{viewManager.findCurrencyFrom()}"/>
+                <h:commandButton value="Find CurrencyTo" action="#{viewManager.findCurrencyTo()}"/>
+            </p>
+            <p>
+                <h:commandButton value="Init database" action="#{viewManager.initCurrencies()}"/>
+            </p>
+        </h:form>
+    </h:body>
+</html>
+

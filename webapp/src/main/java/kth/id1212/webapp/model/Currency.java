@@ -52,7 +52,7 @@ public class Currency implements CurrencyDTO, Serializable{
         if(!(object instanceof Currency)){
             return false;
         }
-        Currency other = (Currency) other;
+        Currency other = (Currency) object;
         return this.abbr == other.abbr;
     }
     

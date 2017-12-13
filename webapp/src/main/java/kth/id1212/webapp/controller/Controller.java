@@ -5,9 +5,13 @@
  */
 package kth.id1212.webapp.controller;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import kth.id1212.webapp.integration.CurrencyDAO;
+import kth.id1212.webapp.model.Currency;
+import kth.id1212.webapp.model.CurrencyDTO;
 
 /**
  *
@@ -19,12 +23,12 @@ public class Controller {
     @EJB CurrencyDAO currencyDB;
     
     public CurrencyDTO createCurrency(String abbr, String name, float rate){
-        Currency currency = new Currency(abr, name, rate);
+        Currency currency = new Currency(abbr, name, rate);
         currencyDB.persistCurrency(currency);
         return currency;
     }
     
-    public CurrencyDTO getCurrency(String abbr){
-        return currencyDB.getCurrency(abbr);
+    public CurrencyDTO findCurrency(String abbr){
+        return currencyDB.findCurrency(abbr);
     }
 }

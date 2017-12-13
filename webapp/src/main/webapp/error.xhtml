@@ -9,14 +9,14 @@
     <h:body>
         <h1>Transaction Failed</h1>
         <c:choose>
-            <c:when test="#{acctManager.exception.cause != null}">
-                <h3><h:outputText value="#{acctManager.exception.cause.message}"/></h3>
+            <c:when test="#{viewManager.exception.cause != null}">
+                <h3><h:outputText value="#{viewManager.exception.cause.message}"/></h3>
             </c:when>
             <c:otherwise>
-                <h3><h:outputText value="#{acctManager.exception.message}"/></h3>
+                <h3><h:outputText value="#{viewManager.exception.message}"/></h3>
             </c:otherwise>
         </c:choose>
-        <a href="account.xhtml">Back to main page</a>
+        <a href="index.xhtml">Back to main page</a>
     </h:body>
 </html>
 
