@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.kth.id1212.appserv.bank.model;
+package kth.id1212.webapp.model;
 
 /**
  * The views read-only view of an Account.

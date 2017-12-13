@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.kth.id1212.appserv.bank.view;
+package se.kth.id1212.webapp.view;
 
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -29,8 +29,8 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import se.kth.id1212.appserv.bank.controller.CashierFacade;
-import se.kth.id1212.appserv.bank.model.AccountDTO;
+import kth.id1212.webapp.controller.CashierFacade;
+import kth.id1212.webapp.model.AccountDTO;
 
 /**
  * Handles all interaction with the account JSF page.

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.kth.id1212.appserv.bank.model;
+package kth.id1212.webapp.model;
 
 import java.io.Serializable;
 import javax.persistence.Entity;

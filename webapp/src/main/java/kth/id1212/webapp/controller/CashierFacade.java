@@ -21,17 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.kth.id1212.appserv.bank.controller;
+package kth.id1212.webapp.controller;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityNotFoundException;
-import se.kth.id1212.appserv.bank.integration.BankDAO;
-import se.kth.id1212.appserv.bank.model.Account;
-import se.kth.id1212.appserv.bank.model.AccountDTO;
-import se.kth.id1212.appserv.bank.model.OverdraftException;
+import kth.id1212.webapp.integration.BankDAO;
+import kth.id1212.webapp.model.Account;
+import kth.id1212.webapp.model.AccountDTO;
+import kth.id1212.webapp.model.OverdraftException;
 
 /**
  * A controller. All calls to the model that are executed because of an action taken by the cashier

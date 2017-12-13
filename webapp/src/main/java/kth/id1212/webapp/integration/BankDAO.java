@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.kth.id1212.appserv.bank.integration;
+package kth.id1212.webapp.integration;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -29,7 +29,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import se.kth.id1212.appserv.bank.model.Account;
+import kth.id1212.webapp.model.Account;
 
 /**
  * Handles all interaction with the entity manager. No code outside of this class, except for the
