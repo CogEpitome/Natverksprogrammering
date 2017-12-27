@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import kth.id1212.project.controller.Controller;
 import kth.id1212.project.model.CurrencyDTO;
+import kth.id1212.project.model.GameDTO;
 
 /**
  *
@@ -23,12 +24,9 @@ import kth.id1212.project.model.CurrencyDTO;
 public class ViewManager implements Serializable{
     @EJB
     private Controller controller;
-    private CurrencyDTO currencyFrom;
-    private CurrencyDTO currencyTo;
-    private String currencyFromAbbr;
-    private float currencyFromAmount;
-    private float currencyToValue;
-    private String currencyToAbbr;
+    private GameDTO game;
+    private String gameStateMessage;
+    private long id;
     private Exception conversionError;
     @Inject
     private Conversation conversation;
@@ -51,24 +49,16 @@ public class ViewManager implements Serializable{
         conversionError = e;
     }
     
-    public CurrencyDTO getCurrencyFrom(){
-        return currencyFrom;
-    }
-    public CurrencyDTO getCurrencyTo(){
-        return currencyTo;
+    public GameDTO getGame(){
+        return game;
     }
     
-    public void setCurrencyFromAmount(float currencyFromAmount){
-        this.currencyFromAmount = currencyFromAmount;
+    public String getGameStateMessage(){
+        return gameStateMessage;
     }
-    public float getCurrencyFromAmount(){
-        return currencyFromAmount;
-    }
-    public void setCurrencyToValue(float currencyToValue){
-        this.currencyToValue = currencyToValue;
-    }
-    public float getCurrencyToValue(){
-        return currencyToValue;
+    
+    public void getId(){
+        return;
     }
     
     public boolean getSuccess(){
@@ -79,52 +69,23 @@ public class ViewManager implements Serializable{
         return conversionError;
     }
     
-    public void setCurrencyFromAbbr(String currencyFromAbbr){
-        this.currencyFromAbbr = currencyFromAbbr;
-    }
-    public String getCurrencyFromAbbr(){
-        return null;
-    }
-    public void setCurrencyToAbbr(String currencyToAbbr){
-        this.currencyToAbbr = currencyToAbbr;
-    }
-    public String getCurrencyToAbbr(){
-        return null;
-    }
+
     
-    public void findCurrencyFrom(){
+    public void findGame(){
         try{
             startConversation();
             conversionError = null;
-            currencyFrom = controller.findCurrency(currencyFromAbbr);
+            game = controller.findGame(id);
         } catch (Exception e){
             handleException(e);
         }
     }
-    public void findCurrencyTo(){
-        try{
-            startConversation();
-            conversionError = null;
-            currencyTo = controller.findCurrency(currencyToAbbr);
-        } catch (Exception e){
-            handleException(e);
-        }
-    }
-    public void convert(){
-        currencyFrom = controller.findCurrency(currencyFromAbbr);
-        currencyTo = controller.findCurrency(currencyToAbbr);
-        currencyToValue = controller.convert(currencyFrom, currencyTo, currencyFromAmount);
-    }
     
-    public void initCurrencies(){
+    public void createGame(){
         try{
             startConversation();
             conversionError = null;
-            CurrencyDTO currency1 = controller.createCurrency("SEK", "Kronor", 1);
-            CurrencyDTO currency2 = controller.createCurrency("EUR", "Euro", 10);
-            CurrencyDTO currency3 = controller.createCurrency("USD", "Dollar", 8.7f);
-            CurrencyDTO currency4 = controller.createCurrency("GBP", "Pound", 9);
-            CurrencyDTO currency5 = controller.createCurrency("INR", "Rupee", 0.1f);
+            GameDTO game = controller.createGame();
         } catch(Exception e){
             handleException(e);
         }
