@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Hangman Project</title>
+    </h:head>
+    <h:body>
+        <h1>Hangman Project</h1>
+
+        <p>
+            <h:outputLabel for="currencyFromAmount" rendered="#{viewManager.currencyFromAmount != 0}" value=""/>
+            <h:outputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
+            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value=" "/>
+            <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
+            <h:outputLabel for="currencyToValue" rendered="#{viewManager.currencyToValue != 0}" value=" is worth "/>
+            <h:outputText id="currencyToValue" value="#{viewManager.currencyToValue}"/>
+            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value=" "/>
+            <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
+        </p>
+        <h:form>
+            <p>
+                <h:outputLabel for="currencyFromAbbr" value="Convert from: "/>
+                <h:inputText id="currencyFromAbbr" value="#{viewManager.currencyFromAbbr}"/>
+                <br/>
+                <h:outputLabel for="currencyToAbbr" value="Convert to: "/>
+                <h:inputText id="currencyToAbbr" value="#{viewManager.currencyToAbbr}"/>
+                <br/>
+                <h:outputLabel for="currencyFromAmount" value="Amount to convert: "/>
+                <h:inputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
+            </p>
+            <p>
+                <h:commandButton value="Convert" action="#{viewManager.convert()}"/>
+            </p>
+            <p>
+                <h:commandButton value="Init database" action="#{viewManager.initCurrencies()}"/>
+            </p>
+        </h:form>
+    </h:body>
+</html>
+
