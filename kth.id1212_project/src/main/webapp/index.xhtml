@@ -6,33 +6,34 @@
         <title>Hangman Project</title>
     </h:head>
     <h:body>
-        <h1>Hangman Project</h1>
+        <h1>Bienvenidos a Hangman amigo!</h1>
 
         <h:form>
+            <h3>Current player</h3>
             <p>
-                <h:outputLabel for="enterName" rendered="#{viewManager.gameStateMessage == null}" value=""/>
-                <h:outputLabel for="enterName" value="Enter name: "/>
+                <h:outputLabel for="currentPlayer" rendered="#{not empty viewManager.player}"  value="Player: "/>
+                <h:outputText id="currentPlayer" value="#{viewManager.player}"/>
+                <br/>
+                <h:outputLabel for="enterName" value=""/>
                 <h:inputText id="enterName" value="#{viewManager.player}"/>
-                <h:outputLabel for="enterNameButton" rendered="#{viewManager.gameStateMessage == null}" value=""/>
                 <h:commandButton id="enterNameButton" value="Enter Name" action="#{viewManager.startGame()}"/>
                 <br/>
-                <h:outputLabel for="enterGuess" rendered="#{viewManager.gameStateMessage != null}" value=""/>
-                <h:outputLabel for="enterGuess" value="Enter guess: "/>
+            </p>
+            <h3>Hangman Game</h3>
+            <p>
+                <h:outputLabel for="enterGuess" rendered="#{not empty viewManager.player}" value=""/>
                 <h:inputText id="enterGuess" value="#{viewManager.guess}"/>
-                <h:outputLabel for="guessButton" rendered="#{viewManager.gameStateMessage != null}" value=""/>
-                <h:commandButton id="guessButton" value="Enter Name" action="#{viewManager.guess()}"/>
+                <h:outputLabel for="guessButton" rendered="#{not empty viewManager.player}" value=""/>
+                <h:commandButton id="guessButton" value="Guess" action="#{viewManager.guess()}"/>
+                <br/>
+                <h:outputLabel for="gameState" rendered="#{not empty viewManager.player}" value=" "/>
+                <h:outputText id="gameState" value="#{viewManager.gameStateMessage}"/>
+                <br/>
+                <h:outputLabel for="guessMessage" rendered="#{ not emptyviewManager.player}" value=""/>
+                <h:outputText id="guessMessage" value="#{viewManager.guessMessage}"/>
             </p>
         </h:form>
-        <p>
-            <h:outputLabel for="playerName" rendered="#{viewManager.player != null}" value=""/>
-            <h:outputText id="playerName" value="#{viewManager.player}"/>
-            <br/>
-            <h:outputLabel for="gameState" rendered="#{viewManager.gameStateMessage != null}" value=" "/>
-            <h:outputText id="gameState" value="#{viewManager.gameStateMessage}"/>
-            <br/>
-            <h:outputLabel for="guessMessage" rendered="#{viewManager.guessMessage != null}" value=""/>
-            <h:outputText id="guessMessage" value="#{viewManager.guessMessage}"/>
-        </p>
+        
     </h:body>
 </html>
 

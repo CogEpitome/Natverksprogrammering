@@ -36,7 +36,7 @@ public class ViewManager implements Serializable{
     }
     
     private void stopConversation(){
-        if(conversation.isTransient()){
+        if(!conversation.isTransient()){
             conversation.end();
         }
     }
@@ -104,8 +104,12 @@ public class ViewManager implements Serializable{
     public void guess(){
         try{
             conversionError = null;
-            guessMessage = controller.guess(game.getPlayer(), guess);
-            refreshGame(game.getPlayer());
+            if(game != null){
+                guessMessage = controller.guess(game.getPlayer(), guess);
+                refreshGame(game.getPlayer());
+                } else {
+                guessMessage = "Please enter a name before playing!";
+            }
         } catch(Exception e){
             handleException(e);
         }
