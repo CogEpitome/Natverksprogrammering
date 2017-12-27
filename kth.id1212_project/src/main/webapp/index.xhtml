@@ -8,34 +8,31 @@
     <h:body>
         <h1>Hangman Project</h1>
 
-        <p>
-            <h:outputLabel for="currencyFromAmount" rendered="#{viewManager.currencyFromAmount != 0}" value=""/>
-            <h:outputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
-            <h:outputLabel for="currencyFrom" rendered="#{viewManager.currencyFrom != null}" value=" "/>
-            <h:outputText id="currencyFrom" value="#{viewManager.currencyFrom.name}"/>
-            <h:outputLabel for="currencyToValue" rendered="#{viewManager.currencyToValue != 0}" value=" is worth "/>
-            <h:outputText id="currencyToValue" value="#{viewManager.currencyToValue}"/>
-            <h:outputLabel for="currencyTo" rendered="#{viewManager.currencyTo != null}" value=" "/>
-            <h:outputText id="currencyTo" value="#{viewManager.currencyTo.name}"/>
-        </p>
         <h:form>
             <p>
-                <h:outputLabel for="currencyFromAbbr" value="Convert from: "/>
-                <h:inputText id="currencyFromAbbr" value="#{viewManager.currencyFromAbbr}"/>
+                <h:outputLabel for="enterName" rendered="#{viewManager.gameStateMessage == null}" value=""/>
+                <h:outputLabel for="enterName" value="Enter name: "/>
+                <h:inputText id="enterName" value="#{viewManager.player}"/>
+                <h:outputLabel for="enterNameButton" rendered="#{viewManager.gameStateMessage == null}" value=""/>
+                <h:commandButton id="enterNameButton" value="Enter Name" action="#{viewManager.startGame()}"/>
                 <br/>
-                <h:outputLabel for="currencyToAbbr" value="Convert to: "/>
-                <h:inputText id="currencyToAbbr" value="#{viewManager.currencyToAbbr}"/>
-                <br/>
-                <h:outputLabel for="currencyFromAmount" value="Amount to convert: "/>
-                <h:inputText id="currencyFromAmount" value="#{viewManager.currencyFromAmount}"/>
-            </p>
-            <p>
-                <h:commandButton value="Convert" action="#{viewManager.convert()}"/>
-            </p>
-            <p>
-                <h:commandButton value="Init database" action="#{viewManager.initCurrencies()}"/>
+                <h:outputLabel for="enterGuess" rendered="#{viewManager.gameStateMessage != null}" value=""/>
+                <h:outputLabel for="enterGuess" value="Enter guess: "/>
+                <h:inputText id="enterGuess" value="#{viewManager.guess}"/>
+                <h:outputLabel for="guessButton" rendered="#{viewManager.gameStateMessage != null}" value=""/>
+                <h:commandButton id="guessButton" value="Enter Name" action="#{viewManager.guess()}"/>
             </p>
         </h:form>
+        <p>
+            <h:outputLabel for="playerName" rendered="#{viewManager.player != null}" value=""/>
+            <h:outputText id="playerName" value="#{viewManager.player}"/>
+            <br/>
+            <h:outputLabel for="gameState" rendered="#{viewManager.gameStateMessage != null}" value=" "/>
+            <h:outputText id="gameState" value="#{viewManager.gameStateMessage}"/>
+            <br/>
+            <h:outputLabel for="guessMessage" rendered="#{viewManager.guessMessage != null}" value=""/>
+            <h:outputText id="guessMessage" value="#{viewManager.guessMessage}"/>
+        </p>
     </h:body>
 </html>
 

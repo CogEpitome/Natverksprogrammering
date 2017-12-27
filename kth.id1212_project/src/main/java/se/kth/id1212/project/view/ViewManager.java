@@ -12,7 +12,6 @@ import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import kth.id1212.project.controller.Controller;
-import kth.id1212.project.model.CurrencyDTO;
 import kth.id1212.project.model.GameDTO;
 
 /**
@@ -25,8 +24,7 @@ public class ViewManager implements Serializable{
     @EJB
     private Controller controller;
     private GameDTO game;
-    private String gameStateMessage;
-    private long id;
+    private String gameStateMessage, guessMessage, player, guess;
     private Exception conversionError;
     @Inject
     private Conversation conversation;
@@ -49,16 +47,39 @@ public class ViewManager implements Serializable{
         conversionError = e;
     }
     
+    public void setGame(){
+        return;
+    }
     public GameDTO getGame(){
         return game;
     }
     
+    public void setGameStateMessage(String msg){
+        return;
+    }
     public String getGameStateMessage(){
         return gameStateMessage;
     }
     
-    public void getId(){
+    public void setGuessMessage(String msg){
         return;
+    }
+    public String getGuessMessage(){
+        return guessMessage;
+    }
+    
+    public void setGuess(String guess){
+        this.guess = guess;
+    }
+    public String getGuess(){
+        return guess;
+    }
+    
+    public void setPlayer(String player){
+        this.player = player;
+    }
+    public String getPlayer(){
+        return player;
     }
     
     public boolean getSuccess(){
@@ -69,25 +90,29 @@ public class ViewManager implements Serializable{
         return conversionError;
     }
     
-
-    
-    public void findGame(){
+    public void startGame(){
         try{
             startConversation();
             conversionError = null;
-            game = controller.findGame(id);
-        } catch (Exception e){
+            game = controller.startGame(player);
+            refreshGame(game.getPlayer());
+        } catch(Exception e){
             handleException(e);
         }
     }
     
-    public void createGame(){
+    public void guess(){
         try{
-            startConversation();
             conversionError = null;
-            GameDTO game = controller.createGame();
+            guessMessage = controller.guess(game.getPlayer(), guess);
+            refreshGame(game.getPlayer());
         } catch(Exception e){
             handleException(e);
         }
+    }
+    
+    private void refreshGame(String name){
+        GameDTO foundGame = controller.findGame(name);
+        this.gameStateMessage = foundGame.getState();
     }
 }

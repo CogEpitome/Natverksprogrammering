@@ -9,7 +9,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import kth.id1212.project.model.Game;
 
@@ -23,10 +22,10 @@ public class GameDAO {
     @PersistenceContext(unitName = "projectPU")
     private EntityManager em;
     
-    public Game findGame(long id){
-        Game game = em.find(Game.class, id);
+    public Game findGame(String player){
+        Game game = em.find(Game.class, player);
         if(game == null){
-            throw new EntityNotFoundException("No Game with the specified ID was found in the database");
+            return null;
         }
         return game;
     }
